@@ -1,29 +1,41 @@
 import React from 'react';
-import {SafeAreaView, View, Text, useColorScheme} from 'react-native';
+import {
+  SafeAreaView,
+  View,
+  Text,
+  useColorScheme,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import HomeScreen from './src/pages/Homescreen.js';
+import {createStackNavigator} from '@react-navigation/stack';
+
 export default function App() {
   const isDarkMode = useColorScheme() === 'dark';
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+  const Tab = createBottomTabNavigator();
+  // const Stack = createStackNavigator();
 
   return (
-    <View>
-      <SafeAreaView style={backgroundStyle}></SafeAreaView>
-      <View>
-        <Text
-          style={{
-            textAlign: 'center',
-            color: isDarkMode ? 'white' : 'black',
-            fontSize: 30,
-          }}>
-          App.js
-        </Text>
-      </View>
-    </View>
+    <NavigationContainer>
+      <Tab.Navigator
+        screenOptions={{
+          // tabBarIconStyle: {display: 'none'},
+        }}>
+        <Tab.Screen name="Home" component={HomeScreen} />
+        <Tab.Screen name="Notification" component={HomeScreen} />
+        <Tab.Screen name="AddEvent" component={HomeScreen} />
+        <Tab.Screen name="Correction" component={HomeScreen} />
+        <Tab.Screen name="MyPage" component={HomeScreen} />
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 }
-
 // /**
 //  * Sample React Native App
 //  * https://github.com/facebook/react-native
