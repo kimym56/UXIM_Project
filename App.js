@@ -6,11 +6,17 @@ import {
   useColorScheme,
   TouchableOpacity,
   StyleSheet,
+  Image,
+  StatusBar,
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import HomeScreen from './src/pages/Homescreen.js';
+import HomeScreen from './src/pages/HomeScreen';
+import AddScreen from './src/pages/AddScreen';
+import ProfileScreen from './src/pages/ProfileScreen';
+import TopBar from './src/pages/TopBar'
+
 import {createStackNavigator} from '@react-navigation/stack';
 
 export default function App() {
@@ -22,18 +28,51 @@ export default function App() {
   // const Stack = createStackNavigator();
 
   return (
-    <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={{
-          // tabBarIconStyle: {display: 'none'},
-        }}>
-        <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Notification" component={HomeScreen} />
-        <Tab.Screen name="AddEvent" component={HomeScreen} />
-        <Tab.Screen name="Correction" component={HomeScreen} />
-        <Tab.Screen name="MyPage" component={HomeScreen} />
-      </Tab.Navigator>
-    </NavigationContainer>
+      <NavigationContainer>
+        <Tab.Navigator
+          screenOptions={{
+            tabBarShowLabel: false,
+            headerShown: false
+            // tabBarIconStyle: {display: 'none'},
+          }}>
+          <Tab.Screen
+            name="Home"
+            component={HomeScreen}
+            options={{
+              tabBarIcon: () => (
+                <Image
+                  source={require('./src/assets/Home.png')}
+                  style={{width: 25, height: 25}}
+                />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="AddEvent"
+            component={AddScreen}
+            options={{
+              tabBarIcon: () => (
+                <Image
+                  source={require('./src/assets/Add.png')}
+                  style={{width: 25, height: 25}}
+                />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="MyPage"
+            component={ProfileScreen}
+            options={{
+              tabBarIcon: () => (
+                <Image
+                  source={require('./src/assets/Profile.png')}
+                  style={{width: 25, height: 25}}
+                />
+              ),
+            }}
+          />
+        </Tab.Navigator>
+      </NavigationContainer>
   );
 }
 // /**
