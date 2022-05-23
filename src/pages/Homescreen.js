@@ -3,7 +3,10 @@ import {Image, View, Text, StyleSheet} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Story from './Story.js';
 
-export default function Homescreen() {
+export default function Homescreen(props) {
+  goNav = (destination) => {
+    props.navigation.navigate(destination);
+  }
   return (
     <SafeAreaView>
       <View style={styles.container}>
@@ -18,7 +21,7 @@ export default function Homescreen() {
         />
       </View>
       <View style={styles.story}>
-        <Story/>
+        <Story navigation={props.navigation}/>
       </View>
     </SafeAreaView>
   );

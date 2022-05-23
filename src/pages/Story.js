@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet, Image} from 'react-native';
+import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import MapView from 'react-native-maps';
 import ExifReader from '../../node_modules/exifreader/src/exif-reader';
 import RNFS from '../../node_modules/react-native-fs';
@@ -12,9 +12,12 @@ import {decode} from 'base64-arraybuffer';
 // const lat = tags['gps']['Latitude'];
 // const long = tags['gps']['Longitude'];
 
-export default function Story() {
+export default function Story({navigation}) {
   console.log(RNFS.CachesDirectoryPath);
-var [lat, long] = [48.858571, 2.294338];
+  var [lat, long] = [48.858571, 2.294338];
+  var [lat2, long2] = [37.566, 126.937];
+  var img = require('../assets/IMG_0.jpeg');
+  var imgSource = 'IMG_0.jpeg';
   return (
     <View style={styles.container}>
       <MapView
@@ -26,13 +29,19 @@ var [lat, long] = [48.858571, 2.294338];
           longitudeDelta: 0.00521,
         }}
       />
-      <Image source={require('../assets/IMG_0596.jpg')} style={styles.image} />
+      <TouchableOpacity
+        style={styles.touchable}
+        onPress={() => {
+          navigation.navigate('Map', {latitude: lat, longitude: long});
+        }}>
+        <Image source={img} style={styles.image} />
+      </TouchableOpacity>
     </View>
   );
 }
 const styles = StyleSheet.create({
   container: {
-    height: 600,
+    height: 640,
     width: 354,
     borderRadius: 5,
     backgroundColor: 'white',
@@ -42,9 +51,13 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '50%',
   },
-  image: {
+  touchable: {
     width: '100%',
     height: '50%',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
     overflow: 'hidden',
   },
 });
