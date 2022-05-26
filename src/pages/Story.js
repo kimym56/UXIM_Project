@@ -13,6 +13,7 @@ import {decode} from 'base64-arraybuffer';
 // const long = tags['gps']['Longitude'];
 
 export default function Story({navigation}) {
+  console.log("Story render");
   console.log(RNFS.CachesDirectoryPath);
   const [lat, long] = [48.858571, 2.294338];
   var [lat2, long2] = [37.566, 126.937];

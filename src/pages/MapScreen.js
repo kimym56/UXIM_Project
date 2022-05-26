@@ -12,11 +12,11 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import MapView, {Marker} from 'react-native-maps';
 import Category from './Category';
 import Carousel from 'react-native-snap-carousel';
-
 import RNFS from 'react-native-fs';
 import {decode} from 'base64-arraybuffer';
 import ExifReader from '../../node_modules/exifreader/src/exif-reader.js';
 
+const assets = require('../assets/assets.js');
 const SLIDER_WIDTH = Dimensions.get('window').width;
 const SLIDER_HEIGHT = Dimensions.get('window').height;
 const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.75);
@@ -26,6 +26,8 @@ for (let i = 0; i < 10; i++) {
   DATA.push({
     index: i,
     uri: '/Users/kimyoungmin/UXIM_Project/src/assets/IMG_' + i + '.jpeg',
+    name: i,
+    // item : assets[this.name]
   });
 }
 DATA[0].item = require('../assets/IMG_0.jpeg');
@@ -41,6 +43,7 @@ DATA[9].item = require('../assets/IMG_9.jpeg');
 
 export default function MapScreen(props) {
   // console.log(props);
+  console.log("Mapscreen render");
   const [stateIndex, setIndex] = useState(0);
   const [gps, setGPS] = useState({
     lat: props.route.params.latitude,
@@ -64,10 +67,12 @@ export default function MapScreen(props) {
     return (
       <View style={styles.itemContainer}>
         {/* <Text style={styles.itemLabel}>{`Item ${item.index}`}</Text> */}
-        <Image
-          style={{width: '100%', height: '100%', borderRadius: 17}}
-          source={DATA[index].item}
-        />
+        <TouchableOpacity style={{width:'100%'}} onPress={()=>{props.navigation.navigate('Image',DATA[index])}}>
+          <Image
+            style={{width: '100%', height: '100%', borderRadius: 17}}
+            source={DATA[index].item}
+          />
+        </TouchableOpacity>
       </View>
     );
   };
