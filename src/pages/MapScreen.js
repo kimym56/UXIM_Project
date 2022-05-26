@@ -1,8 +1,15 @@
 import React, {useState} from 'react';
-import {StyleSheet, Text, View, Dimensions, Image} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  Image,
+  TouchableOpacity,
+  Button,
+} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import MapView from 'react-native-maps';
-import {ScrollView} from 'react-native-gesture-handler';
+import MapView, {Marker} from 'react-native-maps';
 import Category from './Category';
 import Carousel from 'react-native-snap-carousel';
 
@@ -33,6 +40,7 @@ DATA[8].item = require('../assets/IMG_8.jpeg');
 DATA[9].item = require('../assets/IMG_9.jpeg');
 
 export default function MapScreen(props) {
+  // console.log(props);
   const [stateIndex, setIndex] = useState(0);
   const [gps, setGPS] = useState({
     lat: props.route.params.latitude,
@@ -42,7 +50,9 @@ export default function MapScreen(props) {
     const b64Buffer = await RNFS.readFile(uri, 'base64'); // Where the URI looks like this: "file:///path/to/image/IMG_0123.HEIC"
     const fileBuffer = decode(b64Buffer);
     const tags = ExifReader.load(fileBuffer, {expanded: true});
-    tags.gps ? setGPS({lat:tags.gps.Latitude, long:tags.gps.Longitude}) : null;
+    tags.gps
+      ? setGPS({lat: tags.gps.Latitude, long: tags.gps.Longitude})
+      : null;
     console.log(gps);
   }
   const onSnap = index => {
@@ -61,10 +71,13 @@ export default function MapScreen(props) {
       </View>
     );
   };
+  const goBack = () => {
+    props.navigation.navigate('Stack');
+  };
 
   return (
     // <SafeAreaView>
-    <View>
+    <View style={styles.container}>
       <MapView
         style={styles.map}
         region={{
@@ -72,12 +85,23 @@ export default function MapScreen(props) {
           longitude: gps.long,
           latitudeDelta: 0.015,
           longitudeDelta: 0.015,
-        }}
-        ></MapView>
+        }}>
+        <Marker
+          coordinate={{latitude: gps.lat, longitude: gps.long}}
+          // image={{uri: '/Users/kimyoungmin/UXIM_Project/src/assets/bread crumbs.png'}}
+        />
+      </MapView>
       <View
         style={{
           position: 'absolute',
         }}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            props.navigation.goBack();
+          }}>
+          <Image source={require('../assets/goback.png')} />
+        </TouchableOpacity>
         <Carousel
           ref={c => (this.carousel = c)}
           data={DATA}
@@ -96,12 +120,23 @@ export default function MapScreen(props) {
 }
 
 const styles = StyleSheet.create({
+  button: {
+    top: 50,
+    left: 20,
+    width: 40,
+    borderRadius: 10,
+    backgroundColor: 'rgba(100,100,100,0.15)',
+  },
+  container: {
+    width: '100%',
+    height: '100%',
+  },
   map: {
     width: '100%',
     height: '100%',
   },
   carouselContainer: {
-    marginTop: SLIDER_HEIGHT - ITEM_HEIGHT - 60,
+    top: SLIDER_HEIGHT - ITEM_HEIGHT - 120,
   },
   itemContainer: {
     marginBottom: 10,

@@ -14,7 +14,7 @@ import {decode} from 'base64-arraybuffer';
 
 export default function Story({navigation}) {
   console.log(RNFS.CachesDirectoryPath);
-  var [lat, long] = [48.858571, 2.294338];
+  const [lat, long] = [48.858571, 2.294338];
   var [lat2, long2] = [37.566, 126.937];
   var img = require('../assets/IMG_0.jpeg');
   var imgSource = 'IMG_0.jpeg';
