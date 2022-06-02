@@ -3,6 +3,7 @@ import {
   View,
   Text,
   Image,
+  ImageBackground,
   SafeAreaView,
   StyleSheet,
   Dimensions,
@@ -18,61 +19,78 @@ export default function ImageScreen(props) {
   console.log('***props2*** : ', props.route);
   var src = props.route.params.name;
   const [imgNum, setIndex] = useState(src);
-  const [imgSrc, setImgSrc] = useState(assets[imgNum]);
+  const [imgSrc, setImgSrc] = useState(assets.assetsObject[imgNum]);
   const changeImage = num => {
-    if (imgNum+num >= 0 && imgNum+num < 10) {
+    if (imgNum + num >= 0 && imgNum + num < 12) {
       setIndex(imgNum + num);
-      setImgSrc(assets[imgNum + num]);
+      setImgSrc(assets.assetsObject[imgNum + num]);
     }
   };
   // var src2 = '../assets/'+src
   // var image = require(src);
   return (
-    <SafeAreaView>
-      <View style={{borderWidth: 5, borderColor: 'yellow'}}>
+    <View>
+      <View style={{}}>
+        <ImageBackground source={imgSrc} style={styles.image2} blurRadius={20}>
+          <View style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.1)'}}></View>
+        </ImageBackground>
         <Image source={imgSrc} style={styles.image} />
       </View>
-      <View
-        style={{
-          width: '100%',
-          height: '100%',
-          marginTop: 46, //Need to change
-          borderWidth: 5,
-          borderColor: 'green',
-          position: 'absolute',
-          flexDirection: 'row',
-        }}>
+      <View //Touchable Area
+        style={styles.touchableArea}>
         <TouchableOpacity
           style={{
             width: '50%',
             height: '100%',
-            borderWidth: 1,
-            borderColor: 'red',
           }}
           onPress={() => {
             changeImage(-1);
           }}>
-          <Text>{imgNum}</Text>
+          <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            props.navigation.goBack();
+          }}>
+          <Image source={require('../assets/goback.png')} />
+        </TouchableOpacity>
+        
         </TouchableOpacity>
         <TouchableOpacity
           style={{
             width: '50%',
             height: '100%',
-            borderWidth: 1,
-            borderColor: 'blue',
           }}
           onPress={() => {
             changeImage(+1);
           }}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 const styles = StyleSheet.create({
+  button: {
+    top: 4,
+    left: 20,
+    width: 40,
+    borderRadius: 10,
+    // backgroundColor: 'rgba(100,100,100,0.15)',
+  },
+  touchableArea:{
+    width: '100%',
+    height: '100%',
+    marginTop: 46, //Need to change
+    position: 'absolute',
+    flexDirection: 'row',
+  },
   image: {
     width: '100%',
     height: '100%',
+    position: 'absolute',
     resizeMode: 'contain',
+  },
+  image2: {
+    width: '100%',
+    height: '100%',
   },
 });

@@ -22,8 +22,8 @@ export default function BottomStack() {
         options={{
           tabBarIcon: () => (
             <Image
-              source={require('../assets/Home.png')}
-              style={{width: 25, height: 25}}
+              source={require('../assets/Icon_Home.png')}
+              style={{width: 44, height: 44}}
             />
           ),
         }}
@@ -34,8 +34,8 @@ export default function BottomStack() {
         options={{
           tabBarIcon: () => (
             <Image
-              source={require('../assets/Add.png')}
-              style={{width: 25, height: 25}}
+              source={require('../assets/Icon_Add.png')}
+              style={{width: 44, height: 44}}
             />
           ),
         }}
@@ -46,8 +46,8 @@ export default function BottomStack() {
         options={{
           tabBarIcon: () => (
             <Image
-              source={require('../assets/Profile.png')}
-              style={{width: 25, height: 25}}
+              source={require('../assets/Icon_Profile.png')}
+              style={{width: 44, height: 44}}
             />
           ),
         }}

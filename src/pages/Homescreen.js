@@ -8,16 +8,16 @@ export default function Homescreen(props) {
     props.navigation.navigate(destination);
   }
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{backgroundColor: 'white'}}>
       <View style={styles.container}>
         <Image
-          source={require('../assets/Alarm.png')}
-          style={{width: 30, height: 30}}
+          source={require('../assets/Icon_Alarm.png')}
+          style={{width: 44, height: 44}}
         />
         <Image source={require('../assets/LOGO.png')} />
         <Image
-          source={require('../assets/Search.png')}
-          style={{width: 30, height: 30}}
+          source={require('../assets/Icon_Search.png')}
+          style={{width: 44, height: 44}}
         />
       </View>
       <View style={styles.story}>
@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingLeft: 48,
     paddingRight: 48,
+    backgroundColor: 'white'
   },
   story: {
     paddingTop: 10,
