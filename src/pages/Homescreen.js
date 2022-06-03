@@ -2,7 +2,6 @@ import React from 'react';
 import {Image, View, Text, StyleSheet} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Story from './Story.js';
-
 export default function Homescreen(props) {
   goNav = (destination) => {
     props.navigation.navigate(destination);
@@ -11,7 +10,7 @@ export default function Homescreen(props) {
     <SafeAreaView style={{backgroundColor: 'white'}}>
       <View style={styles.container}>
         <Image
-          source={require('../assets/Icon_Alarm.png')}
+          source={require('../assets/tt.png')}
           style={{width: 44, height: 44}}
         />
         <Image source={require('../assets/LOGO.png')} />

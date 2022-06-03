@@ -1,17 +1,17 @@
-export const assetsObject = {
-  0: require('./IMG_0.jpeg'),
-  1: require('./IMG_1.jpeg'),
-  2: require('./IMG_2.jpeg'),
-  3: require('./IMG_3.jpeg'),
-  4: require('./IMG_4.jpeg'),
-  5: require('./IMG_5.jpeg'),
-  6: require('./IMG_6.jpeg'),
-  7: require('./IMG_7.jpeg'),
-  8: require('./IMG_8.jpeg'),
-  9: require('./IMG_9.jpeg'),
-  10: require('./IMG_10.jpeg'),
-  11: require('./IMG_11.jpeg'),
-};
+export const assetsObject = [
+  require('./IMG_0.jpeg'),
+  require('./IMG_1.jpeg'),
+  require('./IMG_2.jpeg'),
+  require('./IMG_3.jpeg'),
+  require('./IMG_4.jpeg'),
+  require('./IMG_5.jpeg'),
+  require('./IMG_6.jpeg'),
+  require('./IMG_7.jpeg'),
+  require('./IMG_8.jpeg'),
+  require('./IMG_9.jpeg'),
+  require('./IMG_10.jpeg'),
+  require('./IMG_11.jpeg'),
+];
 export const markers = [
   {
     coordinate: {

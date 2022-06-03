@@ -15,7 +15,7 @@ import {decode} from 'base64-arraybuffer';
 export default function Story({navigation}) {
   console.log("Story render");
   console.log(RNFS.CachesDirectoryPath);
-  const [lat, long] = [48.858571, 2.294338];
+  const [lat, long] = [48.855725, 2.2985333333333333];
   var [lat2, long2] = [37.566, 126.937];
   var img = require('../assets/IMG_0.jpeg');
   var imgSource = 'IMG_0.jpeg';
@@ -26,14 +26,14 @@ export default function Story({navigation}) {
         initialRegion={{
           latitude: lat,
           longitude: long,
-          latitudeDelta: 0.00522,
-          longitudeDelta: 0.00521,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
         }}
       />
       <TouchableOpacity
         style={styles.touchable}
         onPress={() => {
-          navigation.navigate('Map', {latitude: lat, longitude: long});
+          navigation.navigate('Map', {coordinate : {latitude: lat, longitude: long}});
         }}>
         <Image source={img} style={styles.image} />
       </TouchableOpacity>

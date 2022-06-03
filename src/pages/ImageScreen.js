@@ -10,14 +10,23 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {IMG_0} from '../assets/assets.js';
-
+import * as Progress from 'react-native-progress';
 const SLIDER_WIDTH = Dimensions.get('window').width;
 const SLIDER_HEIGHT = Dimensions.get('window').height;
 const assets = require('../assets/assets.js');
 export default function ImageScreen(props) {
-  console.log('***props1*** : ', props);
-  console.log('***props2*** : ', props.route);
-  var src = props.route.params.name;
+  console.log('ImageScreen render');
+  console.log(
+    'Slider Width : ',
+    SLIDER_WIDTH,
+    'Slider Height : ',
+    SLIDER_HEIGHT,
+  );
+  console.log('***props*** : ', props);
+  console.log('***props.route*** : ', props.route);
+  console.log('***props.route.params.data : ***',props.route.params.data)
+  // console.log(assets.assetsObject);
+  var src = props.route.params.data.name;
   const [imgNum, setIndex] = useState(src);
   const [imgSrc, setImgSrc] = useState(assets.assetsObject[imgNum]);
   const changeImage = num => {
@@ -47,13 +56,13 @@ export default function ImageScreen(props) {
             changeImage(-1);
           }}>
           <TouchableOpacity
-          style={styles.button}
-          onPress={() => {
-            props.navigation.goBack();
-          }}>
-          <Image source={require('../assets/goback.png')} />
-        </TouchableOpacity>
-        
+            style={styles.button}
+            onPress={() => {
+              console.log('props.route.params.coordinates[imgNum]:',props.route.params.coordinates[imgNum])
+              props.navigation.navigate('Map',{index : imgNum, coordinate : props.route.params.coordinates[imgNum]});
+            }}>
+            <Image source={require('../assets/goback.png')} />
+          </TouchableOpacity>
         </TouchableOpacity>
         <TouchableOpacity
           style={{
@@ -65,23 +74,45 @@ export default function ImageScreen(props) {
           }}
         />
       </View>
+
+      <View
+        style={{
+          bottom: 0,
+          // marginLeft: SLIDER_WIDTH * 0.08,
+          position: 'absolute',
+          // borderWidth: 1,
+          height: SLIDER_HEIGHT * 0.071,  // 60
+          width: SLIDER_WIDTH,  // 390
+          alignItems: 'center',
+        }}>
+        <Progress.Bar
+          style={{top: SLIDER_HEIGHT * 0.016}}  // 14
+          progress={imgNum / (assets.assetsObject.length - 1)}
+          height={4}
+          width={SLIDER_WIDTH * 0.9}  //350
+          color="white"
+          // backgroundColor="black"
+          borderWidth={0}
+        />
+      </View>
     </View>
   );
 }
 const styles = StyleSheet.create({
   button: {
-    top: 4,
-    left: 20,
-    width: 40,
-    borderRadius: 10,
+    top: SLIDER_HEIGHT*0.069, //  58
+    left: SLIDER_WIDTH*0.051, //  20
+    width: 44,
     // backgroundColor: 'rgba(100,100,100,0.15)',
   },
-  touchableArea:{
+  touchableArea: {
     width: '100%',
     height: '100%',
-    marginTop: 46, //Need to change
+    // top: 46, //Need to change
     position: 'absolute',
     flexDirection: 'row',
+    // borderWidth:1,
+    // borderColor:'red'
   },
   image: {
     width: '100%',
