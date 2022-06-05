@@ -11,6 +11,9 @@ import {
 } from 'react-native';
 import {IMG_0} from '../assets/assets.js';
 import * as Progress from 'react-native-progress';
+import {Like} from '../assets/Button/Like';
+import {Bookmark} from '../assets/Button/Bookmark';
+import {QA} from '../assets/Button/QA.js';
 const SLIDER_WIDTH = Dimensions.get('window').width;
 const SLIDER_HEIGHT = Dimensions.get('window').height;
 const assets = require('../assets/assets.js');
@@ -24,7 +27,7 @@ export default function ImageScreen(props) {
   );
   console.log('***props*** : ', props);
   console.log('***props.route*** : ', props.route);
-  console.log('***props.route.params.data : ***',props.route.params.data)
+  console.log('***props.route.params.data : ***', props.route.params.data);
   // console.log(assets.assetsObject);
   var src = props.route.params.data.name;
   const [imgNum, setIndex] = useState(src);
@@ -58,8 +61,14 @@ export default function ImageScreen(props) {
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
-              console.log('props.route.params.coordinates[imgNum]:',props.route.params.coordinates[imgNum])
-              props.navigation.navigate('Map',{index : imgNum, coordinate : props.route.params.coordinates[imgNum]});
+              console.log(
+                'props.route.params.coordinates[imgNum]:',
+                props.route.params.coordinates[imgNum],
+              );
+              props.navigation.navigate('Map', {
+                index: imgNum,
+                coordinate: props.route.params.coordinates[imgNum],
+              });
             }}>
             <Image source={require('../assets/goback.png')} />
           </TouchableOpacity>
@@ -81,27 +90,36 @@ export default function ImageScreen(props) {
           // marginLeft: SLIDER_WIDTH * 0.08,
           position: 'absolute',
           // borderWidth: 1,
-          height: SLIDER_HEIGHT * 0.071,  // 60
-          width: SLIDER_WIDTH,  // 390
+          height: SLIDER_HEIGHT * 0.118, // 60
+          width: SLIDER_WIDTH, // 390
           alignItems: 'center',
         }}>
         <Progress.Bar
-          style={{top: SLIDER_HEIGHT * 0.016}}  // 14
+          style={{top: SLIDER_HEIGHT * 0.077}} // 25
           progress={imgNum / (assets.assetsObject.length - 1)}
           height={4}
-          width={SLIDER_WIDTH * 0.9}  //350
+          width={SLIDER_WIDTH * 0.8} //312
           color="white"
           // backgroundColor="black"
           borderWidth={0}
         />
+        <View style={{flexDirection: 'row',width:SLIDER_WIDTH,alignItems:'center'}}>
+          <Image
+            style={{width: 40, height: 40, borderRadius: 40 / 2,left:30 }}
+            source={require('../assets/IMG_0638.jpeg')}
+          />
+          <Like style={{left: 210}} />
+          <QA style={{left: 293-40-20}} />
+          <Bookmark style={{left: 293-40-20+20}} />
+        </View>
       </View>
     </View>
   );
 }
 const styles = StyleSheet.create({
   button: {
-    top: SLIDER_HEIGHT*0.069, //  58
-    left: SLIDER_WIDTH*0.051, //  20
+    top: SLIDER_HEIGHT * 0.069, //  58
+    left: SLIDER_WIDTH * 0.051, //  20
     width: 44,
     // backgroundColor: 'rgba(100,100,100,0.15)',
   },

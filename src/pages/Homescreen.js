@@ -10,7 +10,7 @@ export default function Homescreen(props) {
     <SafeAreaView style={{backgroundColor: 'white'}}>
       <View style={styles.container}>
         <Image
-          source={require('../assets/tt.png')}
+          source={require('../assets/Icon_Alarm.png')}
           style={{width: 44, height: 44}}
         />
         <Image source={require('../assets/LOGO.png')} />

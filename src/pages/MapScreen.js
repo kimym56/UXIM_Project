@@ -18,7 +18,7 @@ import ExifReader from '../../node_modules/exifreader/src/exif-reader.js';
 import MapViewDirections from 'react-native-maps-directions';
 import * as Progress from 'react-native-progress';
 import LinearGradient from 'react-native-linear-gradient';
-
+import { mapStyle } from '../styles/mapStyle';
 const assets = require('../assets/assets.js');
 const SLIDER_WIDTH = Dimensions.get('window').width;
 const SLIDER_HEIGHT = Dimensions.get('window').height;
@@ -110,6 +110,7 @@ export default function MapScreen(props) {
         ref={ref => {
           this.map = ref;
         }}
+        customMapStyle={mapStyle}
         style={styles.map}
         region={{
           latitude: gps.latitude,
@@ -199,7 +200,7 @@ export default function MapScreen(props) {
         style={{
           position: 'absolute',
           bottom: 0,
-          height: SLIDER_HEIGHT * 0.345,
+          height: SLIDER_HEIGHT * 0.346, // 292
         }}>
         <Carousel
           ref={c => (this.carousel = c)}
@@ -216,16 +217,7 @@ export default function MapScreen(props) {
         />
       </View>
       <View // BottomGradient Container
-        style={{
-          bottom: 0,
-          position: 'absolute',
-          height: SLIDER_HEIGHT * 0.071, //  60
-          width: SLIDER_WIDTH,
-          alignItems: 'center',
-          // justifyContent: 'center',
-          // borderWidth: 1,
-          borderColor: 'red',
-        }}>
+        style={styles.botGradientContainer}>
         <LinearGradient
           style={{
             position: 'absolute',
@@ -235,7 +227,7 @@ export default function MapScreen(props) {
           colors={['rgba(0,0,0,0.0)', 'rgba(0,0,0,0.4)']}
         />
         <Progress.Bar
-          style={{top: SLIDER_HEIGHT * 0.03}}
+          style={{top: SLIDER_HEIGHT * 0.03}} 
           progress={stateIndex / (assets.assetsObject.length - 1)}
           height={4}
           width={SLIDER_WIDTH * 0.8}
@@ -261,17 +253,29 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     height: '100%',
+    // borderWidth:1
   },
   map: {
     width: '100%',
     height: '100%',
   },
+  botGradientContainer: {
+    bottom: 0,
+    position: 'absolute',
+    height: SLIDER_HEIGHT * 0.071, //  60
+    width: SLIDER_WIDTH,
+    alignItems: 'center',
+    // justifyContent: 'center',
+    // borderWidth: 1,
+    borderColor: 'red',
+  },
   carouselContainer: {
-    // borderWidth:1,
-    top: SLIDER_HEIGHT * 0.017, //  14
+    // borderWidth: 1,
   },
   itemContainer: {
-    bottom: SLIDER_HEIGHT * 0.011, // 9
+    top: SLIDER_HEIGHT * 0.018, //  15
+
+    // bottom: SLIDER_HEIGHT * 0.005, // 9
     width: ITEM_WIDTH,
     height: ITEM_HEIGHT,
     alignItems: 'center',
