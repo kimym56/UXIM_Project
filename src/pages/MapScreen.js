@@ -18,7 +18,7 @@ import ExifReader from '../../node_modules/exifreader/src/exif-reader.js';
 import MapViewDirections from 'react-native-maps-directions';
 import * as Progress from 'react-native-progress';
 import LinearGradient from 'react-native-linear-gradient';
-import { mapStyle } from '../styles/mapStyle';
+import {mapStyle} from '../styles/mapStyle';
 const assets = require('../assets/assets.js');
 const SLIDER_WIDTH = Dimensions.get('window').width;
 const SLIDER_HEIGHT = Dimensions.get('window').height;
@@ -73,9 +73,10 @@ export default function MapScreen(props) {
     console.log('done');
   }, [props.route.params]);
   const onSnap = index => {
-    // this.map.animateCamera({center: assets.markers[index].coordinate});
+    this.map.animateToRegion(assets.markers[index].coordinate);
+
+    // setGPS(assets.markers[index].coordinate);
     setIndex(index);
-    setGPS(assets.markers[index].coordinate);
   };
 
   // const setIndexAfterGoBack = (index) => {
@@ -112,7 +113,7 @@ export default function MapScreen(props) {
         }}
         customMapStyle={mapStyle}
         style={styles.map}
-        region={{
+        initialRegion={{
           latitude: gps.latitude,
           longitude: gps.longitude,
           latitudeDelta: 0.01,
@@ -227,7 +228,7 @@ export default function MapScreen(props) {
           colors={['rgba(0,0,0,0.0)', 'rgba(0,0,0,0.4)']}
         />
         <Progress.Bar
-          style={{top: SLIDER_HEIGHT * 0.03}} 
+          style={{top: SLIDER_HEIGHT * 0.03}}
           progress={stateIndex / (assets.assetsObject.length - 1)}
           height={4}
           width={SLIDER_WIDTH * 0.8}
