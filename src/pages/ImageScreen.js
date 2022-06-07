@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useCallback} from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,8 @@ import * as Progress from 'react-native-progress';
 import {Like} from '../assets/Button/Like';
 import {Bookmark} from '../assets/Button/Bookmark';
 import {QA} from '../assets/Button/QA.js';
+import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
+import QAScreen from './QAScreen';
 const SLIDER_WIDTH = Dimensions.get('window').width;
 const SLIDER_HEIGHT = Dimensions.get('window').height;
 const assets = require('../assets/assets.js');
@@ -25,9 +27,10 @@ export default function ImageScreen(props) {
     'Slider Height : ',
     SLIDER_HEIGHT,
   );
-  console.log('***props*** : ', props);
-  console.log('***props.route*** : ', props.route);
-  console.log('***props.route.params.data : ***', props.route.params.data);
+  // console.log('this.bottomSheetModalRef.index: ', this.bottomSheetModalRef);
+  // console.log('***props*** : ', props);
+  // console.log('***props.route*** : ', props.route);
+  // console.log('***props.route.params.data : ***', props.route.params.data);
   // console.log(assets.assetsObject);
   var src = props.route.params.data.name;
   const [imgNum, setIndex] = useState(src);
@@ -38,8 +41,11 @@ export default function ImageScreen(props) {
       setImgSrc(assets.assetsObject[imgNum + num]);
     }
   };
-  // var src2 = '../assets/'+src
-  // var image = require(src);
+  const snapPoints = ['50%', '50%', '100%'];
+  const handleSheetChanges = useCallback(index => {
+    // console.log('handleSheetChanges', index);
+  }, []);
+
   return (
     <View>
       <View style={{}}>
@@ -103,16 +109,39 @@ export default function ImageScreen(props) {
           // backgroundColor="black"
           borderWidth={0}
         />
-        <View style={{flexDirection: 'row',width:SLIDER_WIDTH,alignItems:'center'}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            width: SLIDER_WIDTH,
+            // borderWidth:1,
+            // bottom: SLIDER_HEIGHT / 2,
+            alignItems: 'center',
+          }}>
           <Image
-            style={{width: 40, height: 40, borderRadius: 40 / 2,left:30 }}
+            style={{width: 40, height: 40, borderRadius: 40 / 2, left: 38}}
             source={require('../assets/IMG_0638.jpeg')}
           />
           <Like style={{left: 210}} />
-          <QA style={{left: 293-40-20}} />
-          <Bookmark style={{left: 293-40-20+20}} />
+          <QA
+            style={{left: 293 - 40 - 20}}
+            onPress={() => {
+              bottomSheetModalRef.present();
+            }}
+          />
+          <Bookmark style={{left: 293 - 40 - 20 + 20}} />
         </View>
       </View>
+      <BottomSheetModalProvider>
+        <View>
+          <BottomSheetModal
+            ref={ref => (this.bottomSheetModalRef = ref)}
+            index={1}
+            snapPoints={snapPoints}
+            onChange={handleSheetChanges}>
+            <QAScreen bottomSheetModalRef={this.bottomSheetModalRef} />
+          </BottomSheetModal>
+        </View>
+      </BottomSheetModalProvider>
     </View>
   );
 }

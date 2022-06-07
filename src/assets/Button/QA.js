@@ -1,16 +1,16 @@
-import React, {  useState, useRef } from "react";
-import FontawesomeIcon from "react-native-vector-icons/FontAwesome5";
-import { Animated, View } from "react-native";
+import React, {useState, useRef} from 'react';
+import FontawesomeIcon from 'react-native-vector-icons/FontAwesome5';
+import {Animated, View} from 'react-native';
 
 const AnimatedIcon = Animated.createAnimatedComponent(FontawesomeIcon);
 
-export const QA = ({ item, style }) => {
+export const QA = ({item, style, onPress}) => {
   const scale = useRef(new Animated.Value(1)).current;
   const opacity = useRef(new Animated.Value(1)).current;
   const reverseOpacity = useRef(new Animated.Value(0)).current;
   const [liked, setLiked] = useState(false);
 
-  const like = (value) => {
+  const like = value => {
     Animated.sequence([
       Animated.timing(scale, {
         toValue: 0.9,
@@ -51,30 +51,31 @@ export const QA = ({ item, style }) => {
   return (
     <View>
       <AnimatedIcon
-      solid
-        name={"comments"}
+        solid
+        name={'comments'}
         size={20}
         style={{
           ...style,
-          position: "absolute",
+          position: 'absolute',
           opacity: reverseOpacity,
-          transform: [{ scale }],
+          transform: [{scale}],
         }}
         color="white"
         onPress={() => like(!liked)}
       />
       <AnimatedIcon
-      
-        name={"comments"}
+        name={'comments'}
         size={20}
         style={{
           ...style,
           opacity: opacity,
-          transform: [{ scale }],
+          transform: [{scale}],
         }}
         color="white"
-        onPress={() => like(!liked)}
-        />
+        onPress={() => {
+          like(!liked), onPress();
+        }}
+      />
     </View>
   );
 };

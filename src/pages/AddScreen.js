@@ -1,63 +1,50 @@
-import React from 'react';
-import {View, Text} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import MapView, {Polyline, Geojson} from 'react-native-maps';
+import React, {useCallback, useMemo, useRef} from 'react';
+import {View, Text, StyleSheet, Button} from 'react-native';
+import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
+import QAScreen from './QAScreen';
 export default function AddScreen() {
-  const myPlace = {
-    type: 'FeatureCollection',
-    features: [
-      {
-        type: 'Feature',
-        properties: {},
-        geometry: {
-          type: 'Point',
-          coordinates: [64.165329, 48.844287],
-        },
-      },
-    ],
-  };
+  // variables
+  const snapPoints = ['10%','50%','100%'];
+
+  // callbacks
+  // const handlePresentModalPress = useCallback(() => {
+  //   bottomSheetModalRef.present();
+  // }, []);
+  const handleSheetChanges = useCallback((index) => {
+    console.log('handleSheetChanges', index);
+  }, []);
+
+  // renders
   return (
-    <View>
-      <Text>AddScreen</Text>
-      <MapView
-        style={{
-          width: '100%',
-          height: '100%',
-        }}
-        region={{
-          latitude: 37.39327199259832,
-          longitude: 126.63303760163976 ,
-          latitudeDelta: 0.055,
-          longitudeDelta: 0.055,
-        }}>
-        <Polyline
-          coordinates={[
-            {latitude: 37.8025259, longitude: -122.4351431},
-            {latitude: 37.7896386, longitude: -122.421646},
-            {latitude: 37.7665248, longitude: -122.4161628},
-            {latitude: 37.7734153, longitude: -122.4577787},
-            {latitude: 37.7948605, longitude: -122.4596065},
-            {latitude: 37.8025259, longitude: -122.4351431},
-          ]}
-          strokeColor="blue" // fallback for when `strokeColors` is not supported by the map-provider
-          // strokeColors={[
-          //   'red',
-          //   // '#00000000', // no color, creates a "long" gradient between the previous and next coordinate
-          //   'orange',
-          //   'yellow',
-          //   'green',
-          //   'blue',
-          //   'purple',
-          // ]}
-          strokeWidth={5}
+
+    <BottomSheetModalProvider>
+      <View style={styles.container}>
+        <Button
+          onPress={()=>{bottomSheetModalRef.present()}}
+          title="Present Modal"
+          color="black"
         />
-        {/* <Geojson 
-      geojson={myPlace} 
-      strokeColor="blue"
-      fillColor="red"
-      strokeWidth={10}
-    /> */}
-      </MapView>
-    </View>
+        <BottomSheetModal
+          ref={ref => (this.bottomSheetModalRef = ref)}
+          index={1}
+          snapPoints={snapPoints}
+          onChange={handleSheetChanges}>
+          <QAScreen bottomSheetModalRef={this.bottomSheetModalRef}/>
+        </BottomSheetModal>
+      </View>
+    </BottomSheetModalProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 24,
+    justifyContent: 'center',
+    // backgroundColor: 'grey',
+  },
+  contentContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
+});
