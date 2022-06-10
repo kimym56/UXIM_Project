@@ -4,7 +4,7 @@ import { Animated, View } from "react-native";
 
 const AnimatedIcon = Animated.createAnimatedComponent(FontawesomeIcon);
 
-export const Like = ({ item, style }) => {
+export const Like = ({ item, style,size,color }) => {
   const scale = useRef(new Animated.Value(1)).current;
   const opacity = useRef(new Animated.Value(1)).current;
   const reverseOpacity = useRef(new Animated.Value(0)).current;
@@ -52,7 +52,7 @@ export const Like = ({ item, style }) => {
     <View>
       <AnimatedIcon
         name={"heart"}
-        size={20}
+        size={size}
         style={{
           ...style,
           position: "absolute",
@@ -64,13 +64,13 @@ export const Like = ({ item, style }) => {
       />
       <AnimatedIcon
         name={"heart-o"}
-        size={20}
+        size={size}
         style={{
           ...style,
           opacity: opacity,
           transform: [{ scale }],
         }}
-        color="white"
+        color={color}
         onPress={() => like(!liked)}
       />
     </View>

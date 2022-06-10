@@ -16,6 +16,8 @@ import {Bookmark} from '../assets/Button/Bookmark';
 import {QA} from '../assets/Button/QA.js';
 import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import QAScreen from './QAScreen';
+import {CustomFooter } from './CustomFooter.tsx';
+import { heightPercentageToDP } from 'react-native-responsive-screen'
 const SLIDER_WIDTH = Dimensions.get('window').width;
 const SLIDER_HEIGHT = Dimensions.get('window').height;
 const assets = require('../assets/assets.js');
@@ -92,6 +94,7 @@ export default function ImageScreen(props) {
 
       <View
         style={{
+          // backgroundColor:'blue',
           bottom: 0,
           // marginLeft: SLIDER_WIDTH * 0.08,
           position: 'absolute',
@@ -121,7 +124,7 @@ export default function ImageScreen(props) {
             style={{width: 40, height: 40, borderRadius: 40 / 2, left: 38}}
             source={require('../assets/IMG_0638.jpeg')}
           />
-          <Like style={{left: 210}} />
+          <Like style={{left: 210}} size={20} color={'white'} />
           <QA
             style={{left: 293 - 40 - 20}}
             onPress={() => {
@@ -132,15 +135,16 @@ export default function ImageScreen(props) {
         </View>
       </View>
       <BottomSheetModalProvider>
-        <View>
-          <BottomSheetModal
-            ref={ref => (this.bottomSheetModalRef = ref)}
-            index={1}
-            snapPoints={snapPoints}
-            onChange={handleSheetChanges}>
-            <QAScreen bottomSheetModalRef={this.bottomSheetModalRef} />
-          </BottomSheetModal>
-        </View>
+        <BottomSheetModal
+          ref={ref => (this.bottomSheetModalRef = ref)}
+          index={1}
+          snapPoints={snapPoints}
+          onChange={handleSheetChanges}
+          footerComponent={CustomFooter}>
+          <QAScreen bottomSheetModalRef={this.bottomSheetModalRef} />
+
+        </BottomSheetModal>
+
       </BottomSheetModalProvider>
     </View>
   );
