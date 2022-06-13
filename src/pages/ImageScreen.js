@@ -16,7 +16,7 @@ import {Bookmark} from '../assets/Button/Bookmark';
 import {QA} from '../assets/Button/QA.js';
 import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import QAScreen from './QAScreen';
-import {CustomFooter } from './CustomFooter.tsx';
+import {CustomFooter } from './CustomFooter.js';
 import { heightPercentageToDP } from 'react-native-responsive-screen'
 const SLIDER_WIDTH = Dimensions.get('window').width;
 const SLIDER_HEIGHT = Dimensions.get('window').height;

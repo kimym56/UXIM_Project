@@ -14,19 +14,33 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 import {toRad} from 'react-native-redash';
+import {POST} from '../data/POST';
 
 const AnimatedRectButton = Animated.createAnimatedComponent(RectButton);
 
-interface CustomFooterProps extends BottomSheetFooterProps {}
 
-const CustomFooterComponent = ({animatedFooterPosition}: CustomFooterProps) => {
-
+const CustomFooterComponent = ({animatedFooterPosition}) => {
+  // console.log('comments:',POST[0].comments)
   const {bottom: bottomSafeArea} = useSafeAreaInsets();
   const {expand, close, animatedIndex} = useBottomSheet();
+  const [key, setKey] = React.useState(0);
+  const reload = React.useCallback(() => setKey((prevKey) => prevKey + 1), []);
   const [value, setValue] = useState();
- const handleInputChange = useCallback(({nativeEvent: {text}}) => {
-    setValue(text);
-  }, []);
+  
+  const handleInputChange = useCallback(
+    ({nativeEvent: {text}}) => {
+      setValue(text);
+      console.log('value : ', value);
+    },
+    [value],
+  );
+  const onSubmitEditing = useCallback(
+    ({nativeEvent: {text}}) => {
+      POST[0].comments.push({user: 'kimym56', comment: value});
+      this.textInput.clear();
+    },
+    [value],
+  );
   return (
     <BottomSheetFooter
       // bottomInset={bottomSafeArea}
@@ -37,17 +51,18 @@ const CustomFooterComponent = ({animatedFooterPosition}: CustomFooterProps) => {
       <View
         style={{
           ...styles.container2,
-          paddingBottom:
-            bottomSafeArea,
+          paddingBottom: bottomSafeArea,
         }}>
         <BottomSheetTextInput
+          ref={ref => (this.textInput = ref)}
           style={styles.input}
           value={value}
           // onFocus={()=>{bottomSheetModalRef}}
           // textContentType="location"
           // placeholderTextColor={colors.secondaryText}
-          placeholder="Search for a place or address"
+          placeholder="Enter your question"
           onChange={handleInputChange}
+          onSubmitEditing={onSubmitEditing}
         />
       </View>
     </BottomSheetFooter>

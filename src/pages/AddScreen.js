@@ -2,7 +2,7 @@ import React, {useCallback, useMemo, useRef} from 'react';
 import {View, Text, StyleSheet, Button} from 'react-native';
 import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import QAScreen from './QAScreen';
-import {CustomFooter } from './CustomFooter.tsx';
+import {CustomFooter } from './CustomFooter.js';
 export default function AddScreen() {
   // variables
   const snapPoints = ['10%', '50%', '95%'];

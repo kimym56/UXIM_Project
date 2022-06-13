@@ -8,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  RefreshControl,
 } from 'react-native';
 import React, {useState} from 'react';
 import {Like} from '../assets/Button/Like';
@@ -94,7 +95,15 @@ const Comments = ({contents}) => {
 export default function QAScreen({bottomSheetModalRef}) {
   const [textValue, setTextValue] = useState('');
   const [textHeight, setTextHeiht] = useState(35);
+  const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  }
   console.log('QAScreen Rendering');
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    wait(1000).then(() => setRefreshing(false));
+  }, []);
+  const [refreshing, setRefreshing] = React.useState(false);
   // console.log('bottomSheetModalRef : ', this.bottomSheetModalRef);
   return (
     <View style={styles.container}>
@@ -109,6 +118,12 @@ export default function QAScreen({bottomSheetModalRef}) {
         <Text style={styles.text}>QnA</Text>
       </View>
       <ScrollView
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+        />
+      }
         style={styles.contentContainer}
         // automaticallyAdjustKeyboardInsets="true"
         alwaysBounceHorizontal ='false'
@@ -116,7 +131,7 @@ export default function QAScreen({bottomSheetModalRef}) {
         >
         <Comments contents={POST[0]} />
       </ScrollView>
-      <View/>
+      {/* <View style={{bottom:0,position: 'absolute', backgroundColor:'red', width:10,height:10}}/> */}
       {/* <View style={styles.textInputContainer}>
         <TextInput
           style={{
@@ -137,6 +152,7 @@ export default function QAScreen({bottomSheetModalRef}) {
 const styles = StyleSheet.create({
   container: {top: 20},
   contentContainer: {
+    
     width: SLIDER_WIDTH,
     height: '80%', // 675
     // borderWidth: 1,
