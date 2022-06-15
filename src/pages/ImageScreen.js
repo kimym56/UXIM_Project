@@ -44,8 +44,11 @@ export default function ImageScreen(props) {
     }
   };
   const snapPoints = ['50%', '50%', '100%'];
+
+  const [snapIndex, setSnapIndex] = useState(1);
   const handleSheetChanges = useCallback(index => {
-    // console.log('handleSheetChanges', index);
+    console.log('handleSheetChanges', index);
+    setSnapIndex(index)
   }, []);
 
   return (
@@ -141,7 +144,7 @@ export default function ImageScreen(props) {
           snapPoints={snapPoints}
           onChange={handleSheetChanges}
           footerComponent={CustomFooter}>
-          <QAScreen bottomSheetModalRef={this.bottomSheetModalRef} />
+          <QAScreen bottomSheetModalRef={this.bottomSheetModalRef} snapIndex={snapIndex}/>
 
         </BottomSheetModal>
 

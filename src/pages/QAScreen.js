@@ -92,19 +92,19 @@ const Comments = ({contents}) => {
     </View>
   );
 };
-export default function QAScreen({bottomSheetModalRef}) {
+export default function QAScreen({bottomSheetModalRef, snapIndex}) {
   const [textValue, setTextValue] = useState('');
   const [textHeight, setTextHeiht] = useState(35);
-  const wait = (timeout) => {
+  const wait = timeout => {
     return new Promise(resolve => setTimeout(resolve, timeout));
-  }
+  };
   console.log('QAScreen Rendering');
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     wait(1000).then(() => setRefreshing(false));
   }, []);
   const [refreshing, setRefreshing] = React.useState(false);
-  // console.log('bottomSheetModalRef : ', this.bottomSheetModalRef);
+  console.log('bottomSheetModalRef : ', this.bottomSheetModalRef);
   return (
     <View style={styles.container}>
       <View style={styles.topBarContainer}>
@@ -118,17 +118,18 @@ export default function QAScreen({bottomSheetModalRef}) {
         <Text style={styles.text}>QnA</Text>
       </View>
       <ScrollView
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-        />
-      }
-        style={styles.contentContainer}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        style={
+          snapIndex == 1
+            ? {...styles.contentContainer, height: '30%'}
+            : {...styles.contentContainer}
+        }
         // automaticallyAdjustKeyboardInsets="true"
-        alwaysBounceHorizontal ='false'
+        alwaysBounceHorizontal="false"
         // contentInsetAdjustmentBehavior='always'
-        >
+      >
         <Comments contents={POST[0]} />
       </ScrollView>
       {/* <View style={{bottom:0,position: 'absolute', backgroundColor:'red', width:10,height:10}}/> */}
@@ -152,7 +153,6 @@ export default function QAScreen({bottomSheetModalRef}) {
 const styles = StyleSheet.create({
   container: {top: 20},
   contentContainer: {
-    
     width: SLIDER_WIDTH,
     height: '80%', // 675
     // borderWidth: 1,
