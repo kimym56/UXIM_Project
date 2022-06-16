@@ -11,6 +11,7 @@ export const assetsObject = [
   require('./IMG_9.jpeg'),
   require('./IMG_10.jpeg'),
   require('./IMG_11.jpeg'),
+  require('./IMG_12.jpeg'),
 ];
 export const markers = [
   {

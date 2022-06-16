@@ -4,7 +4,6 @@ import {Image} from 'react-native';
 import HomeScreen from './HomeScreen';
 import AddScreen from './AddScreen';
 import ProfileScreen from './ProfileScreen';
-import KeyboardHandlingExample from './KeyboardHandlingExample';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 export default function BottomStack() {
@@ -42,7 +41,7 @@ export default function BottomStack() {
       />
       <Tab.Screen
         name="MyPage"
-        component={KeyboardHandlingExample}
+        component={ProfileScreen}
         options={{
           tabBarIcon: () => (
             <Image

@@ -18,15 +18,14 @@ import {POST} from '../data/POST';
 
 const AnimatedRectButton = Animated.createAnimatedComponent(RectButton);
 
-
 const CustomFooterComponent = ({animatedFooterPosition}) => {
   // console.log('comments:',POST[0].comments)
   const {bottom: bottomSafeArea} = useSafeAreaInsets();
   const {expand, close, animatedIndex} = useBottomSheet();
   const [key, setKey] = React.useState(0);
-  const reload = React.useCallback(() => setKey((prevKey) => prevKey + 1), []);
+  const reload = React.useCallback(() => setKey(prevKey => prevKey + 1), []);
   const [value, setValue] = useState();
-  
+
   const handleInputChange = useCallback(
     ({nativeEvent: {text}}) => {
       setValue(text);
@@ -36,7 +35,7 @@ const CustomFooterComponent = ({animatedFooterPosition}) => {
   );
   const onSubmitEditing = useCallback(
     ({nativeEvent: {text}}) => {
-      POST[0].comments.push({user: 'kimym56', comment: value});
+      if (text) POST[0].comments.push({user: 'kimym56', comment: value});
       this.textInput.clear();
     },
     [value],

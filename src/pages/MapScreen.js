@@ -126,12 +126,12 @@ export default function MapScreen(props) {
                 <Marker key={index} coordinate={marker.coordinate}>
                   {stateIndex == index ? (
                     <Image
-                      source={require('../assets/H&G.png')}
+                      source={require('../assets/H&G3.png')}
                       style={{width: 35, height: 35, bottom :17}}
                     />
                   ) : (
                     <Image
-                      source={require('../assets/Bread_test.png')}
+                      source={require('../assets/breadCrumbs.png')}
                       style={{width: 25, height: 25}}
                     />
                   )}
