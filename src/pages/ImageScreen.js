@@ -16,8 +16,8 @@ import {Bookmark} from '../assets/Button/Bookmark';
 import {QA} from '../assets/Button/QA.js';
 import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import QAScreen from './QAScreen';
-import {CustomFooter } from './CustomFooter.js';
-import { heightPercentageToDP } from 'react-native-responsive-screen'
+import {CustomFooter} from './CustomFooter.js';
+import {heightPercentageToDP} from 'react-native-responsive-screen';
 const SLIDER_WIDTH = Dimensions.get('window').width;
 const SLIDER_HEIGHT = Dimensions.get('window').height;
 const assets = require('../assets/assets.js');
@@ -48,7 +48,7 @@ export default function ImageScreen(props) {
   const [snapIndex, setSnapIndex] = useState(1);
   const handleSheetChanges = useCallback(index => {
     console.log('handleSheetChanges', index);
-    setSnapIndex(index)
+    setSnapIndex(index);
   }, []);
 
   return (
@@ -144,10 +144,11 @@ export default function ImageScreen(props) {
           snapPoints={snapPoints}
           onChange={handleSheetChanges}
           footerComponent={CustomFooter}>
-          <QAScreen bottomSheetModalRef={this.bottomSheetModalRef} snapIndex={snapIndex}/>
-
+          <QAScreen
+            bottomSheetModalRef={this.bottomSheetModalRef}
+            snapIndex={snapIndex}
+          />
         </BottomSheetModal>
-
       </BottomSheetModalProvider>
     </View>
   );

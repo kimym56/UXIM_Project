@@ -1,57 +1,99 @@
-import React, {useCallback, useMemo, useRef, useState} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import BottomSheet, {BottomSheetBackdrop} from '@gorhom/bottom-sheet';
+import React, { useState } from 'react';
+import { SafeAreaView, View, StyleSheet } from 'react-native';
+import ContextMenu from 'react-native-context-menu-view';
 
 const App = () => {
-  // ref
-  const bottomSheetRef = useRef(null);
+  const [color, setColor] = useState('blue');
+  const [circle, setCircle] = useState(false)
 
-  // variables
-  const snapPoints = useMemo(() => ['25%', '50%', '75%'], []);
-  const [snapIndex, setIndex] = useState(1);
-  // callbacks
-  const handleSheetChanges = useCallback(index => {
-    console.log('handleSheetChanges', index);
-    setIndex(index);
-  }, []);
-
-  // renders
-  const renderBackdrop = useCallback(
-    props => (
-      <BottomSheetBackdrop
-        {...props}
-        disappearsOnIndex={1}
-        appearsOnIndex={2}
-      />
-    ),
-    [],
-  );
   return (
-    <View style={styles.container}>
-      <BottomSheet
-        ref={bottomSheetRef}
-        index={1}
-        snapPoints={snapPoints}
-        backdropComponent={renderBackdrop}
-        onChange={handleSheetChanges}>
-        <View style={styles.contentContainer}>
-          <Text>Awesome �</Text>
-        </View>
-      </BottomSheet>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <ContextMenu title={'Customize'} actions={[
+        {
+          title: 'Change Color',
+          systemIcon: 'paintbrush',
+          inlineChildren: true,
+          actions: [
+            {
+              title: 'Blue',
+              systemIcon: color === 'blue' ? 'paintbrush.fill' : 'paintbrush',
+            },
+            {
+              title: 'Red',
+              systemIcon: color === 'red' ? 'paintbrush.fill' : 'paintbrush',
+            },
+          ]
+        },
+        {
+          title: 'Transparent',
+          systemIcon: 'trash',
+          destructive: true,
+        },
+        {
+          title: 'Toggle Circle',
+          systemIcon: 'circlebadge'
+        },
+        {
+          title: 'Disabled Item',
+          disabled: true,
+        },
+      ]} onPress={(event) => {
+        const { index, name } = event.nativeEvent;
+        if (index == 0) {
+          setColor(name.toLowerCase());
+        } else {
+          setCircle(!circle)
+        }
+      }} onCancel={() => {
+        console.warn('CANCELLED')
+      }} previewBackgroundColor="transparent">
+        <View style={[styles.rectangle, { backgroundColor: color, borderRadius: circle ? 999 : 0 }]} />
+      </ContextMenu>
+
+      <View style={styles.spacer} />
+
+      <ContextMenu
+        title={'Dropdown Menu'}
+        actions={[
+          {
+            title: 'Test Item',
+          }
+        ]}
+        dropdownMenuMode={true}
+      >
+        <View style={[styles.rectangle, { backgroundColor: 'purple' }]} />
+      </ContextMenu>
+
+      <View style={styles.spacer} />
+
+      <ContextMenu
+        title={'Custom Preview'}
+        actions={[
+          {
+            title: 'Test Item',
+          },
+        ]}
+        previewBackgroundColor="transparent"
+        preview={<View style={[styles.rectangle, { backgroundColor: 'green' }]} />}>
+        <View style={[styles.rectangle, { backgroundColor: 'red' }]} />
+      </ContextMenu>
+    </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 24,
-    backgroundColor: 'grey',
+    justifyContent: 'flex-start',
+    alignItems: 'center'
   },
-  contentContainer: {
-    flex: 1,
-    alignItems: 'center',
+  rectangle: {
+    width: 200,
+    height: 200,
   },
+  spacer: {
+    height: 16,
+  }
 });
 
 export default App;

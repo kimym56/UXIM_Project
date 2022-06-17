@@ -15,7 +15,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import ImageScreen from './src/pages/ImageScreen';
 import MapScreen from './src/pages/MapScreen';
 import BottomStack from './src/pages/BottomStack';
-
+import SettingScreen from './src/pages/SettingScreen'
 import {createStackNavigator} from '@react-navigation/stack';
 import { LogBox } from 'react-native';
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
@@ -41,6 +41,7 @@ export default function App() {
         <Stack.Screen name="Image" component={ImageScreen} />
         <Stack.Screen name="Map" component={MapScreen} />
         <Stack.Screen name="Stack" component={BottomStack} />
+        <Stack.Screen name='Setting' component={SettingScreen}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

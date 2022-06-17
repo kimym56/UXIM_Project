@@ -61,7 +61,7 @@ for (index = 0; index < 12; index++) {
 
 export default function MapScreen(props) {
   console.log('Mapscreen render');
-  console.log(props);
+  // console.log(props);
   const [stateIndex, setIndex] = useState(0);
   const [gps, setGPS] = useState(props.route.params.coordinate);
 
@@ -275,7 +275,6 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     top: SLIDER_HEIGHT * 0.018, //  15
-
     // bottom: SLIDER_HEIGHT * 0.005, // 9
     width: ITEM_WIDTH,
     height: ITEM_HEIGHT,

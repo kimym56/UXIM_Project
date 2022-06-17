@@ -7,6 +7,7 @@ import {
   FlatList,
   Dimensions,
 } from 'react-native';
+import ContextMenu from 'react-native-context-menu-view';
 import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
 import {SafeAreaView} from 'react-native-safe-area-context';
 const SLIDER_WIDTH = Dimensions.get('window').width;
@@ -14,7 +15,7 @@ const SLIDER_HEIGHT = Dimensions.get('window').height;
 
 const assets = require('../assets/assets.js');
 const DATA = [];
-for (let i = 0; i < 12; i++) {
+for (let i = 0; i < 13; i++) {
   DATA.push({
     index: i,
     uri: '/Users/kimyoungmin/UXIM_Project/src/assets/IMG_' + i + '.jpeg',
@@ -22,19 +23,30 @@ for (let i = 0; i < 12; i++) {
     item: assets.assetsObject[i],
   });
 }
-export default function ProfileScreen() {
+
+export default function ProfileScreen(props) {
+  console.log('Profile rendering');
+  console.log('props:',props)
   return (
     <SafeAreaView style={{backgroundColor: 'white'}}>
       <View style={styles.topBarcontainer}>
+      <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              props.navigation.goBack();
+            }}>
         <Image
           source={require('../assets/Icon_Undo.png')}
           style={{width: 44, height: 44}}
         />
+        </TouchableOpacity>
         {/* <Image source={require('../assets/LOGO.png')} /> */}
-        <Image
-          source={require('../assets/Horizontal_More.png')}
-          style={{width: 44, height: 44}}
-        />
+        <TouchableOpacity onPress={() => {props.navigation.navigate('Setting')}}>
+          <Image
+            source={require('../assets/Horizontal_More.png')}
+            style={{width: 44, height: 44}}
+          />
+        </TouchableOpacity>
       </View>
       <View style={styles.topContainer}>
         <View style={{flexDirection: 'row'}}>
@@ -69,7 +81,7 @@ export default function ProfileScreen() {
                 <Text style={styles.textNormal}>구독자</Text>
               </View>
             </View>
-            <View style={{top:20}}>
+            <View style={{top: 20}}>
               <Text style={{fontWeight: '500', fontSize: 10, lineHeight: 12}}>
                 안녕하세요
                 {'\n'}
@@ -93,14 +105,14 @@ export default function ProfileScreen() {
           }}>
           <TouchableOpacity>
             <View>
-              <Text style={{fontWeight: '600', fontSize: 10, lineHeight:12}}>
+              <Text style={{fontWeight: '600', fontSize: 10, lineHeight: 12}}>
                 구독하기
               </Text>
             </View>
           </TouchableOpacity>
         </View>
       </View>
-      <ScrollView style={{height: '68%'}}>
+      <View style={{height: '68%'}}>
         <FlatList
           data={DATA}
           renderItem={({item, index}) => (
@@ -110,22 +122,34 @@ export default function ProfileScreen() {
                 flexDirection: 'column',
                 // margin: 1,
               }}>
-              <Image
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  height: SLIDER_WIDTH / 3,
-                  width: SLIDER_WIDTH / 3,
-                }}
-                source={DATA[index].item}
-              />
+              <ContextMenu
+                actions={[
+                  {title: '나만보기'},
+                  {title: '편집하기'},
+                  {title: '삭제하기'},
+                ]}
+                onPress={e => {
+                  console.warn(
+                    `Pressed ${e.nativeEvent.name} at index ${e.nativeEvent.index}`,
+                  );
+                }}>
+                <Image
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: SLIDER_WIDTH / 3,
+                    width: SLIDER_WIDTH / 3,
+                  }}
+                  source={DATA[index].item}
+                />
+              </ContextMenu>
             </View>
           )}
           //Setting the number of column
           numColumns={3}
           keyExtractor={(item, index) => index.toString()}
         />
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
