@@ -16,8 +16,12 @@ import ImageScreen from './src/pages/ImageScreen';
 import MapScreen from './src/pages/MapScreen';
 import BottomStack from './src/pages/BottomStack';
 import SettingScreen from './src/pages/SettingScreen'
+import LogoScreen from './src/pages/LoginScreen'
 import {createStackNavigator} from '@react-navigation/stack';
 import { LogBox } from 'react-native';
+
+import LoginScreen from './src/pages/LoginScreen';
+import RegisterScreen from './src/pages/RegisterScreen';
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
 LogBox.ignoreAllLogs();//Ignore all log notifications
 export default function App() {
@@ -42,6 +46,10 @@ export default function App() {
         <Stack.Screen name="Map" component={MapScreen} />
         <Stack.Screen name="Stack" component={BottomStack} />
         <Stack.Screen name='Setting' component={SettingScreen}/>
+
+        <Stack.Screen name='Login' component={LoginScreen}/>
+        <Stack.Screen name='Register' component={RegisterScreen}/>
+        
       </Stack.Navigator>
     </NavigationContainer>
   );

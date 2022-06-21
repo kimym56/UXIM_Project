@@ -3,6 +3,7 @@ import {Image, View, Text, StyleSheet, Dimensions} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Story from './Story.js';
 import Carousel from 'react-native-snap-carousel';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 const SLIDER_WIDTH = Dimensions.get('window').width;
 const SLIDER_HEIGHT = Dimensions.get('window').height;
 const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.89);
@@ -31,7 +32,9 @@ export default function Homescreen(props) {
           source={require('../assets/Icon_Alarm.png')}
           style={{width: 44, height: 44}}
         />
+        <TouchableOpacity onPress={()=>(props.navigation.navigate('Login'))}>
         <Image source={require('../assets/LOGO.png')} />
+        </TouchableOpacity>
         <Image
           source={require('../assets/Icon_Search.png')}
           style={{width: 44, height: 44}}
