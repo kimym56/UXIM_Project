@@ -9,7 +9,7 @@ import {
   Button,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import MapView, {Marker, Polyline} from 'react-native-maps';
+import MapView, {PROVIDER_GOOGLE, Marker, Polyline} from 'react-native-maps';
 import Category from './Category';
 import Carousel from 'react-native-snap-carousel';
 import RNFS from 'react-native-fs';
@@ -108,11 +108,12 @@ export default function MapScreen(props) {
     // <SafeAreaView>
     <View style={styles.container}>
       <MapView
+        // provider={PROVIDER_GOOGLE}
         ref={ref => {
           this.map = ref;
         }}
-        customMapStyle={mapStyle}
         style={styles.map}
+        customMapStyle={mapStyle}
         initialRegion={{
           latitude: gps.latitude,
           longitude: gps.longitude,
@@ -126,13 +127,13 @@ export default function MapScreen(props) {
                 <Marker key={index} coordinate={marker.coordinate}>
                   {stateIndex == index ? (
                     <Image
-                      source={require('../assets/H&G3.png')}
-                      style={{width: 35, height: 35, bottom :17}}
+                      source={require('../assets/UXIM_icon-05.png')}
+                      style={{width:40, height:40}}
                     />
                   ) : (
                     <Image
-                      source={require('../assets/breadCrumbs.png')}
-                      style={{width: 25, height: 25}}
+                      source={require('../assets/UXIM_icon-03.png')}
+                      style={{width: 30, height: 30}}
                     />
                   )}
                 </Marker>

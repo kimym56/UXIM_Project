@@ -3,7 +3,8 @@ import {Image, View, Text, StyleSheet, Dimensions} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Story from './Story.js';
 import Carousel from 'react-native-snap-carousel';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 const SLIDER_WIDTH = Dimensions.get('window').width;
 const SLIDER_HEIGHT = Dimensions.get('window').height;
 const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.89);
@@ -27,36 +28,38 @@ export default function Homescreen(props) {
   };
   return (
     <SafeAreaView style={{backgroundColor: 'white'}}>
-      <View style={styles.container}>
-        <Image
-          source={require('../assets/Icon_Alarm.png')}
-          style={{width: 44, height: 44}}
-        />
-        <TouchableOpacity onPress={()=>(props.navigation.navigate('Login'))}>
-        <Image source={require('../assets/LOGO.png')} />
-        </TouchableOpacity>
-        <Image
-          source={require('../assets/Icon_Search.png')}
-          style={{width: 44, height: 44}}
-        />
-      </View>
-      <View>
-        <Carousel
-          // layout={'stack'}
-          // layoutCardOffset={12}
-          ref={c => (this.carousel = c)}
-          data={DATA}
-          renderItem={_renderItem}
-          sliderWidth={SLIDER_WIDTH}
-          itemWidth={ITEM_WIDTH}
-          containerCustomStyle={styles.carouselContainer}
-          inactiveSlideShift={0}
-          onSnapToItem={index => {
-            onSnap(index);
-          }}
-          useScrollView={true}
-        />
-      </View>
+      <BottomSheetModalProvider>
+        <View style={styles.container}>
+          <Image
+            source={require('../assets/Icon_Alarm.png')}
+            style={{width: 44, height: 44}}
+          />
+          <TouchableOpacity onPress={() => props.navigation.navigate('Login')}>
+            <Image source={require('../assets/LOGO.png')} />
+          </TouchableOpacity>
+          <Image
+            source={require('../assets/Icon_Search.png')}
+            style={{width: 44, height: 44}}
+          />
+        </View>
+        <View>
+          <Carousel
+            // layout={'stack'}
+            // layoutCardOffset={12}
+            ref={c => (this.carousel = c)}
+            data={DATA}
+            renderItem={_renderItem}
+            sliderWidth={SLIDER_WIDTH}
+            itemWidth={ITEM_WIDTH}
+            containerCustomStyle={styles.carouselContainer}
+            inactiveSlideShift={0}
+            onSnapToItem={index => {
+              onSnap(index);
+            }}
+            useScrollView={true}
+          />
+        </View>
+      </BottomSheetModalProvider>
     </SafeAreaView>
   );
 }
