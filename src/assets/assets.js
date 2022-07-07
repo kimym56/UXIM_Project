@@ -12,6 +12,8 @@ export const assetsObject = [
   require('./IMG_10.jpeg'),
   require('./IMG_11.jpeg'),
   require('./IMG_12.jpeg'),
+  require('./IMG_13.jpeg'),
+  
 ];
 export const markers = [
   {
@@ -92,6 +94,38 @@ export const markers = [
     title: 'Paris',
   },
   {
+    coordinate: {
+      latitude: 0,
+      longtitude: 0,
+    },
+    title: 'Paris',
+  },
+  {
+    coordinate: {
+      latitude: 0,
+      longtitude: 0,
+    },
+    title: 'Paris',
+  },
+  {
+    coordinate: {
+      latitude: 0,
+      longtitude: 0,
+    },
+    title: 'Paris',
+  },{
+    coordinate: {
+      latitude: 0,
+      longtitude: 0,
+    },
+    title: 'Paris',
+  },{
+    coordinate: {
+      latitude: 0,
+      longtitude: 0,
+    },
+    title: 'Paris',
+  },{
     coordinate: {
       latitude: 0,
       longtitude: 0,

@@ -18,6 +18,7 @@ import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import QAScreen from './QAScreen';
 import {CustomFooter} from './CustomFooter.js';
 import {heightPercentageToDP} from 'react-native-responsive-screen';
+import Geocoder from 'react-native-geocoding';
 const SLIDER_WIDTH = Dimensions.get('window').width;
 const SLIDER_HEIGHT = Dimensions.get('window').height;
 const assets = require('../assets/assets.js');
@@ -38,18 +39,26 @@ export default function ImageScreen(props) {
   const [imgNum, setIndex] = useState(src);
   const [imgSrc, setImgSrc] = useState(assets.assetsObject[imgNum]);
   const changeImage = num => {
-    if (imgNum + num >= 0 && imgNum + num < 12) {
+    if (imgNum + num >= 0 && imgNum + num < 14) {
       setIndex(imgNum + num);
       setImgSrc(assets.assetsObject[imgNum + num]);
     }
   };
   const snapPoints = ['50%', '50%', '100%'];
-
+  const [address, setAdress] = useState('');
   const [snapIndex, setSnapIndex] = useState(1);
   const handleSheetChanges = useCallback(index => {
     console.log('handleSheetChanges', index);
     setSnapIndex(index);
   }, []);
+  Geocoder.init('AIzaSyAIEOOAcL44fsau394qnzogwV2CDYwym1s', {language: 'en'});
+  Geocoder.from(props.route.params.coordinates[imgNum])
+    .then(json => {
+      console.log('json: ', json.results[0]);
+      setAdress(json.results[0].formatted_address);
+      // console.log('address :', addressComponent);
+    })
+    .catch(error => console.warn(error));
 
   return (
     <View>
@@ -69,20 +78,25 @@ export default function ImageScreen(props) {
           onPress={() => {
             changeImage(-1);
           }}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              console.log(
-                'props.route.params.coordinates[imgNum]:',
-                props.route.params.coordinates[imgNum],
-              );
-              props.navigation.navigate('Map', {
-                index: imgNum,
-                coordinate: props.route.params.coordinates[imgNum],
-              });
-            }}>
-            <Image source={require('../assets/goback.png')} />
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => {
+                console.log(
+                  'props.route.params.coordinates[imgNum]:',
+                  props.route.params.coordinates[imgNum],
+                );
+                props.navigation.navigate('Map', {
+                  index: imgNum,
+                  coordinate: props.route.params.coordinates[imgNum],
+                });
+              }}>
+              <Image source={require('../assets/goback.png')} />
+              <View style={{width: 290}}>
+                <Text  selectable={true} style={{color: 'white', fontWeight: '400', fontSize: 13}}>
+                  {address}
+                </Text>
+              </View>
+            </TouchableOpacity>
         </TouchableOpacity>
         <TouchableOpacity
           style={{
@@ -155,10 +169,13 @@ export default function ImageScreen(props) {
 }
 const styles = StyleSheet.create({
   button: {
-    top: SLIDER_HEIGHT * 0.069, //  58
-    left: SLIDER_WIDTH * 0.051, //  20
+    marginTop: SLIDER_HEIGHT * 0.069, //  58
+    marginLeft: SLIDER_WIDTH * 0.051, //  20
     width: 44,
+    flexDirection: 'row',
     // backgroundColor: 'rgba(100,100,100,0.15)',
+    // justifyContent: 'center', 
+    alignItems:'center'
   },
   touchableArea: {
     width: '100%',

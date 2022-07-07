@@ -22,14 +22,14 @@ import {mapStyle} from '../styles/mapStyle';
 const assets = require('../assets/assets.js');
 const SLIDER_WIDTH = Dimensions.get('window').width;
 const SLIDER_HEIGHT = Dimensions.get('window').height;
-const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.75);
+const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.6);
 const ITEM_HEIGHT = Math.round((ITEM_WIDTH * 3) / 4);
 const DATA = [];
 const coordinates = [];
-for (let i = 0; i < 12; i++) {
+for (let i = 0; i < 14; i++) {
   DATA.push({
     index: i,
-    uri: '/Users/kimyoungmin/UXIM_Project/src/assets/IMG_' + i + '.jpeg',
+    uri: '/Users/kimyoungmin/UXIM_Project0621/src/assets/IMG_' + i + '.jpeg',
     name: i,
     item: assets.assetsObject[i],
   });
@@ -42,10 +42,11 @@ async function getExif(uri, index) {
     latitude: tags.gps.Latitude,
     longitude: tags.gps.Longitude,
   };
+  console.log("getExif : "+uri)
   assets.markers[index].coordinate = coordinate;
   coordinates.push(coordinate);
 }
-for (index = 0; index < 12; index++) {
+for (index = 0; index < 14; index++) {
   getExif(DATA[index].uri, index);
 }
 // DATA[0].item = require('../assets/IMG_0.jpeg');
@@ -65,12 +66,12 @@ export default function MapScreen(props) {
   const [stateIndex, setIndex] = useState(0);
   const [gps, setGPS] = useState(props.route.params.coordinate);
 
-  console.log('gps:', gps);
+  // console.log('gps:', gps);
   useEffect(() => {
     props.route.params.index
       ? this.carousel.snapToItem(props.route.params.index)
       : null;
-    console.log('done');
+    console.log('useEffect done');
   }, [props.route.params]);
   const onSnap = index => {
     this.map.animateToRegion(assets.markers[index].coordinate);
@@ -153,6 +154,9 @@ export default function MapScreen(props) {
             {latitude: 37.56262222222222, longitude: 126.9373638888889},
             {latitude: 37.56579722222222, longitude: 126.9386138888889},
             {latitude: 37.700875, longitude: 126.37917222222221},
+            {latitude: 33.256594444444445, longitude: 126.53916111111111},
+            {latitude: 33.256594444444445, longitude: 126.53916111111111},
+
             {latitude: 33.256594444444445, longitude: 126.53916111111111},
             {latitude: 33.256594444444445, longitude: 126.53916111111111},
           ]}

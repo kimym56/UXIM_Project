@@ -137,8 +137,9 @@ export default function ProfileScreen(props) {
                   style={{
                     justifyContent: 'center',
                     alignItems: 'center',
-                    height: SLIDER_WIDTH / 3,
                     width: SLIDER_WIDTH / 3,
+                    height: (SLIDER_WIDTH / 3) * 4 / 3,
+                    
                   }}
                   source={DATA[index].item}
                 />
