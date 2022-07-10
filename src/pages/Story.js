@@ -8,9 +8,7 @@ import {
   Dimensions,
 } from 'react-native';
 import MapView,{ PROVIDER_GOOGLE }  from 'react-native-maps';
-import ExifReader from '../../node_modules/exifreader/src/exif-reader';
 import RNFS from '../../node_modules/react-native-fs';
-import {decode} from 'base64-arraybuffer';
 import QAScreen from './QAScreen';
 import {Like} from '../assets/Button/Like';
 import {Bookmark} from '../assets/Button/Bookmark';

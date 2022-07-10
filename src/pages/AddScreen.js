@@ -1,4 +1,4 @@
-import React, {Component, useState} from 'react';
+import React, {Component, useState,useEffect} from 'react';
 import {
   Alert,
   Image,
@@ -20,7 +20,12 @@ import {
 } from 'firebase/storage';
 import {v4 as uuidv4} from 'uuid';
 
-export default function AddScreen() {
+export default function AddScreen(props) {
+  
+  useEffect(()=>{
+    pickMultiple()
+  },[])
+  console.log('props : ',props)
   const [imageState, setImageState] = useState({image: null, images: null});
   const [progress, setProgress] = useState(0);
   const getData = async () => {
@@ -30,22 +35,69 @@ export default function AddScreen() {
 
     console.log('routeList : ', routeList);
   };
+  const sleep = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms))
+
+  }
   const uploadImage = async() => {
     console.log('imageState : ', imageState);
-    const uri = imageState.image.uri;
-    const filename = uri.substring(uri.lastIndexOf('/') + 1);
-    const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
-    // setUploading(true);
-    // setTransferred(0);
-    console.log('filename : ', filename);
-    console.log('url : ', uploadUri);
+    // const promises = [];
+    imageState.images.map(async file => {
+      console.log ('i : ',file)
+      const uri = file.uri;
+      const filename = uri.substring(uri.lastIndexOf('/')+1)
+      const storageRef = ref(storage, `images/${filename}`);
 
-    const storageRef = ref(storage, `images/${filename}`);
-    // const uploadTask = uploadBytesResumable(storageRef, uri);
+      const img = await fetch(uri);
+      const bytes =  await img.blob();
+      const uploadTask = await uploadBytesResumable(storageRef, bytes);
 
-    const img = await fetch(uri);
-    const bytes = await img.blob();
-    await uploadBytes(storageRef, bytes); //upload images
+    //   promises.push(uploadTask);
+      
+    //   uploadTask.on(
+    //     "state_changed",
+    //     (snapshot) => {
+    //         const prog = Math.round(
+    //             (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+    //         );
+    //         // setProgress(prog);
+    //     },
+    //     (error) => console.log(error),
+    //     async () => {
+    //         await getDownloadURL(uploadTask.snapshot.ref).then((downloadURLs) => {
+    //             // setURLs(prevState => [...prevState, downloadURLs])
+    //             // console.log("File available at", downloadURLs);
+    //         });
+    //     }
+    // );
+
+      // const img = await fetch(uri);
+      // const bytes =  await img.blob();
+      // console.log('bytes : ',bytes)
+
+      // await uploadBytes(ref, bytes); //upload images
+    })
+    // Promise.all(promises)
+    // .then(() => alert("All images uploaded"))
+    // .catch((err) => console.log(err));
+
+
+
+
+    // const uri = imageState.image.uri;
+    // const filename = uri.substring(uri.lastIndexOf('/') + 1);
+    // const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
+    // // setUploading(true);
+    // // setTransferred(0);
+    // console.log('filename : ', filename);
+    // console.log('url : ', uploadUri);
+
+    // const storageRef = ref(storage, `images/${filename}`);
+    // // const uploadTask = uploadBytesResumable(storageRef, uri);
+
+    // const img = await fetch(uri);
+    // const bytes = await img.blob();
+    // await uploadBytes(ref, bytes); //upload images
 
 
     // uploadTask.on(
@@ -235,6 +287,9 @@ export default function AddScreen() {
       </TouchableOpacity>
       <TouchableOpacity onPress={() => cropLast()} style={styles.button}>
         <Text style={styles.text}>Crop Last Selected Image</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => props.navigation.navigate('Edit',{images : imageState.images})} style={styles.button}>
+        <Text style={styles.text}>navigate</Text>
       </TouchableOpacity>
     </View>
   );

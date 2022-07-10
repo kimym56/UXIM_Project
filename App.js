@@ -22,6 +22,7 @@ import { LogBox } from 'react-native';
 
 import LoginScreen from './src/pages/LoginScreen';
 import RegisterScreen from './src/pages/RegisterScreen';
+import EditImageScreen from './src/pages/EditImageScreen';
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
 LogBox.ignoreAllLogs();//Ignore all log notifications
 export default function App() {
@@ -49,6 +50,9 @@ export default function App() {
 
         <Stack.Screen name='Login' component={LoginScreen}/>
         <Stack.Screen name='Register' component={RegisterScreen}/>
+
+
+        <Stack.Screen name='Edit' component={EditImageScreen}/>
         
       </Stack.Navigator>
     </NavigationContainer>

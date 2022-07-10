@@ -43,10 +43,12 @@ async function getExif(uri, index) {
     longitude: tags.gps.Longitude,
   };
   console.log("getExif : "+uri)
+  console.log("cor: ",coordinate)
   assets.markers[index].coordinate = coordinate;
   coordinates.push(coordinate);
 }
 for (index = 0; index < 14; index++) {
+  console.log("index : ",index)
   getExif(DATA[index].uri, index);
 }
 // DATA[0].item = require('../assets/IMG_0.jpeg');

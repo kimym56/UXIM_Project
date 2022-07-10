@@ -18,7 +18,7 @@ const DATA = [];
 for (let i = 0; i < 13; i++) {
   DATA.push({
     index: i,
-    uri: '/Users/kimyoungmin/UXIM_Project/src/assets/IMG_' + i + '.jpeg',
+    uri: '/Users/kimyoungmin/UXIM_Project0621/src/assets/IMG_' + i + '.jpeg',
     name: i,
     item: assets.assetsObject[i],
   });
