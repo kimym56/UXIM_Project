@@ -1,4 +1,4 @@
-import React, {Component, useState,useEffect} from 'react';
+import React, {Component, useState, useEffect} from 'react';
 import {
   Alert,
   Image,
@@ -11,78 +11,147 @@ import {
 import ImagePicker from 'react-native-image-crop-picker';
 import Video from 'react-native-video';
 import {db, storage} from '../../firebase/firebase-config';
-import {collection, getDocs} from 'firebase/firestore/lite';
+import {
+  collection,
+  getDocs,
+  addDoc,
+  GeoPoint,
+  updateDoc,
+  arrayUnion,
+} from 'firebase/firestore/lite';
+import Geocoder from 'react-native-geocoding';
 import {
   getDownloadURL,
   getStorage,
   ref,
-  uploadBytesResumable,uploadBytes
+  uploadBytesResumable,
+  uploadBytes,
 } from 'firebase/storage';
 import {v4 as uuidv4} from 'uuid';
 
+Geocoder.init('AIzaSyAIEOOAcL44fsau394qnzogwV2CDYwym1s', {language: 'en'});
 export default function AddScreen(props) {
-  
-  useEffect(()=>{
-    pickMultiple()
-  },[])
-  console.log('props : ',props)
-  const [imageState, setImageState] = useState({image: null, images: null});
+  useEffect(() => {
+    pickMultiple();
+  });
+  console.log('props : ', props);
+  const [imageState, setImageState] = useState({images: null});
   const [progress, setProgress] = useState(0);
   const getData = async () => {
     const routesCol = collection(db, 'Route');
     const routeSnapshot = await getDocs(routesCol);
     const routeList = routeSnapshot.docs.map(doc => doc.data());
-
     console.log('routeList : ', routeList);
   };
-  const sleep = (ms) => {
-    return new Promise(resolve => setTimeout(resolve, ms))
+  const getFullAddress = item => {
+    return Geocoder.from({
+      latitude: item.gps.Latitude,
+      longitude: item.gps.Longitude,
+    });
+  };
+  const addData = async () => {
+    const collectionRef = collection(db, 'Route');
+    // const imagesTemp =
+    // const payload = {
+    //   date: new Date(),
+    //   images: imagesTemp,
+    //   like: 0,
+    //   private: false,
+    //   tag: [],
+    //   title: '',
+    //   writer: 'kimym56',
+    // };
+    // await new Promise((resolve, reject) => setTimeout(resolve, 3000));
+    // console.log('imagesTemp : ', imagesTemp);
 
-  }
-  const uploadImage = async() => {
+    const docRef = await addDoc(collectionRef, {
+      date: new Date(),
+      images: new Array(),
+      like: 0,
+      private: false,
+      tag: [],
+      title: '',
+      writer: 'kimym56',
+    });
+    imageState.images.map((item, index) => {
+      console.log('index: ', index);
+      getFullAddress(item).then(res => {
+        updateDoc(docRef, {
+          images: arrayUnion({
+            geo: new GeoPoint(item.gps.Latitude, item.gps.Longitude),
+            geocoding: res.results[0].formatted_address,
+            uri: item.uri,
+          }),
+        });
+      });
+    });
+    const colRef = collection(docRef, 'chat_log');
+    console.log('docRef : ', docRef);
+    // await addDoc(colRef, {
+    //   comment: 'default',
+    //   date: new Date(),
+    //   like: 0,
+    //   writer: 'user1',
+    // });
+  };
+
+  const sleep = ms => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  };
+  const uploadImage = async () => {
     console.log('imageState : ', imageState);
     // const promises = [];
     imageState.images.map(async file => {
-      console.log ('i : ',file)
+      const coordinate = {
+        latitude: file.gps.Latitude,
+        longitude: file.gps.Longitude,
+      };
+      console.log('co : ', coordinate);
+      Geocoder.from(coordinate)
+        .then(json => {
+          console.log('json: ', json.results[0].formatted_address);
+          // setAdress(json.results[0].formatted_address);
+          // console.log('address :', addressComponent);
+        })
+        .catch(error => console.warn(error));
+
+      console.log('i : ', file);
       const uri = file.uri;
-      const filename = uri.substring(uri.lastIndexOf('/')+1)
+      const filename = uri.substring(uri.lastIndexOf('/') + 1);
       const storageRef = ref(storage, `images/${filename}`);
 
       const img = await fetch(uri);
-      const bytes =  await img.blob();
+      const bytes = await img.blob();
       const uploadTask = await uploadBytesResumable(storageRef, bytes);
 
-    //   promises.push(uploadTask);
-      
-    //   uploadTask.on(
-    //     "state_changed",
-    //     (snapshot) => {
-    //         const prog = Math.round(
-    //             (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-    //         );
-    //         // setProgress(prog);
-    //     },
-    //     (error) => console.log(error),
-    //     async () => {
-    //         await getDownloadURL(uploadTask.snapshot.ref).then((downloadURLs) => {
-    //             // setURLs(prevState => [...prevState, downloadURLs])
-    //             // console.log("File available at", downloadURLs);
-    //         });
-    //     }
-    // );
+      //   promises.push(uploadTask);
+
+      //   uploadTask.on(
+      //     "state_changed",
+      //     (snapshot) => {
+      //         const prog = Math.round(
+      //             (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+      //         );
+      //         // setProgress(prog);
+      //     },
+      //     (error) => console.log(error),
+      //     async () => {
+      //         await getDownloadURL(uploadTask.snapshot.ref).then((downloadURLs) => {
+      //             // setURLs(prevState => [...prevState, downloadURLs])
+      //             // console.log("File available at", downloadURLs);
+      //         });
+      //     }
+      // );
 
       // const img = await fetch(uri);
       // const bytes =  await img.blob();
       // console.log('bytes : ',bytes)
 
       // await uploadBytes(ref, bytes); //upload images
-    })
+    });
     // Promise.all(promises)
     // .then(() => alert("All images uploaded"))
     // .catch((err) => console.log(err));
-
-
-
 
     // const uri = imageState.image.uri;
     // const filename = uri.substring(uri.lastIndexOf('/') + 1);
@@ -98,7 +167,6 @@ export default function AddScreen(props) {
     // const img = await fetch(uri);
     // const bytes = await img.blob();
     // await uploadBytes(ref, bytes); //upload images
-
 
     // uploadTask.on(
     //   'state_changed',
@@ -169,13 +237,12 @@ export default function AddScreen(props) {
         console.log('received image', image);
 
         setImageState({
-          image: {
+          images: {
             uri: image.path,
             width: image.width,
             height: image.height,
             mime: image.mime,
           },
-          images: null,
         });
       })
       .catch(e => {
@@ -195,14 +262,14 @@ export default function AddScreen(props) {
       .then(images => {
         console.log('images : ', images);
         setImageState({
-          image: null,
           images: images.map(i => {
-            // console.log('received image', i);
+            console.log('received exif', i.exif['{GPS}']);
             return {
               uri: i.path,
               width: i.width,
               height: i.height,
               mime: i.mime,
+              gps: i.exif['{GPS}'],
             };
           }),
         });
@@ -285,10 +352,25 @@ export default function AddScreen(props) {
       <TouchableOpacity style={styles.button} onPress={() => getData()}>
         <Text style={styles.text}>Get data</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button} onPress={() => addData()}>
+        <Text style={styles.text}>Add data</Text>
+      </TouchableOpacity>
       <TouchableOpacity onPress={() => cropLast()} style={styles.button}>
         <Text style={styles.text}>Crop Last Selected Image</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => props.navigation.navigate('Edit',{images : imageState.images})} style={styles.button}>
+      <TouchableOpacity
+        onPress={() => {
+          console.log('imageState : ', imageState.images);
+        }}
+        style={styles.button}>
+        <Text style={styles.text}>check</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() =>
+          props.navigation.navigate('Edit', {images: imageState.images})
+        }
+        style={styles.button}>
         <Text style={styles.text}>navigate</Text>
       </TouchableOpacity>
     </View>

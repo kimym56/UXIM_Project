@@ -1,4 +1,11 @@
-import {StyleSheet, Text, View, Dimensions, Image} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  Image,
+  ImageBackground,
+} from 'react-native';
 import React, {useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {TouchableOpacity} from 'react-native-gesture-handler';
@@ -10,9 +17,18 @@ export default function EditImageScreen(props) {
   console.log('edit props : ', props);
   const [imgNum, setImgNum] = useState(0);
 
-  console.log('imgNum : ', imgNum);
+  console.log('imgNum : ', imgNum, images.length);
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={{}}>
+      <View>
+        <ImageBackground
+          source={images[imgNum]}
+          style={styles.image2}
+          blurRadius={20}>
+          <View style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.1)'}}></View>
+        </ImageBackground>
+        <Image source={images[imgNum]} style={styles.image} />
+      </View>
       <View style={styles.topBar}>
         {imgNum != 0 ? (
           <TouchableOpacity
@@ -53,42 +69,64 @@ export default function EditImageScreen(props) {
             />
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity style={{width: 44, height: 44, borderWidth: 1}}>
-            <View style={{flex: 1, backgroundColor: 'white'}}></View>
+          <TouchableOpacity
+            style={{width: 44, height: 44, borderWidth: 1}}
+            onPress={() =>
+              props.navigation.navigate('Edit2', {images: images})
+            }>
+            <Image
+              source={require('../assets/Icon_Redo_white.png')}
+              style={{width: 44, height: 44}}
+            />
           </TouchableOpacity>
         )}
       </View>
-      <Image source={images[imgNum]} style={styles.image} />
+
       <Progress.Bar
         style={{marginLeft: 40, marginTop: 18}} // 25
-        progress={imgNum+1 / (images.length)}
+        progress={images.length > 1 ? imgNum + 1 / images.length : 1}
         height={4}
         width={SLIDER_WIDTH * 0.8} //312
         color="white"
         // backgroundColor="black"
         borderWidth={0}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'black',
-    flex: 1,
+    // backgroundColor: 'black',
+    // flex: 1,
     // borderWidth:1
   },
   topBar: {
-    height: 44,
-    // width : SLIDER_WIDTH,
-    margin: 14,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    marginTop: SLIDER_HEIGHT * 0.069, //  58
     // borderWidth:1,
-    // backgroundColor:'black'
+    flexDirection: 'row',
+    // backgroundColor: 'rgba(100,100,100,0.15)',
+    // justifyContent: 'center',
+    // alignItems:'center',
+    position: 'absolute',
+    // height: 44,
+    width: SLIDER_WIDTH,
+    // margin: 14,
+    // flexDirection: 'row',
+    justifyContent: 'space-between',
+    // // borderWidth:1,
+    // // backgroundColor:'black'
   },
   image: {
-    width: SLIDER_WIDTH,
-    height: SLIDER_HEIGHT * 0.616,
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    resizeMode: 'contain',
+    // width: SLIDER_WIDTH,
+    // height: SLIDER_HEIGHT * 0.616,
+  },
+  image2: {
+    width: '100%',
+    height: '100%',
   },
 });

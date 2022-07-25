@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   StyleSheet,
   Text,
@@ -15,14 +15,20 @@ import Carousel from 'react-native-snap-carousel';
 import RNFS from 'react-native-fs';
 import {decode} from 'base64-arraybuffer';
 import ExifReader from '../../node_modules/exifreader/src/exif-reader.js';
+import BottomSheet, {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+} from '@gorhom/bottom-sheet';
+
 import MapViewDirections from 'react-native-maps-directions';
 import * as Progress from 'react-native-progress';
 import LinearGradient from 'react-native-linear-gradient';
 import {mapStyle} from '../styles/mapStyle';
+import {Like} from '../assets/Button/Like';
 const assets = require('../assets/assets.js');
 const SLIDER_WIDTH = Dimensions.get('window').width;
 const SLIDER_HEIGHT = Dimensions.get('window').height;
-const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.6);
+const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.546);
 const ITEM_HEIGHT = Math.round((ITEM_WIDTH * 3) / 4);
 const DATA = [];
 const coordinates = [];
@@ -42,13 +48,13 @@ async function getExif(uri, index) {
     latitude: tags.gps.Latitude,
     longitude: tags.gps.Longitude,
   };
-  console.log("getExif : "+uri)
-  console.log("cor: ",coordinate)
+  console.log('getExif : ' + uri);
+  console.log('cor: ', coordinate);
   assets.markers[index].coordinate = coordinate;
   coordinates.push(coordinate);
 }
 for (index = 0; index < 14; index++) {
-  console.log("index : ",index)
+  console.log('index : ', index);
   getExif(DATA[index].uri, index);
 }
 // DATA[0].item = require('../assets/IMG_0.jpeg');
@@ -68,6 +74,13 @@ export default function MapScreen(props) {
   const [stateIndex, setIndex] = useState(0);
   const [gps, setGPS] = useState(props.route.params.coordinate);
 
+  const snapPoints = ['9%', '38%', '40%'];
+  const [snapIndex, setSnapIndex] = useState(1);
+
+  const handleSheetChanges = useCallback(index => {
+    console.log('handleSheetChanges in MapScreen', index);
+    setSnapIndex(index);
+  }, []);
   // console.log('gps:', gps);
   useEffect(() => {
     props.route.params.index
@@ -131,7 +144,7 @@ export default function MapScreen(props) {
                   {stateIndex == index ? (
                     <Image
                       source={require('../assets/UXIM_icon-05.png')}
-                      style={{width:40, height:40}}
+                      style={{width: 40, height: 40}}
                     />
                   ) : (
                     <Image
@@ -204,27 +217,68 @@ export default function MapScreen(props) {
           <Image source={require('../assets/goback.png')} />
         </TouchableOpacity>
       </View>
-      <View //Carousel Container
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          height: SLIDER_HEIGHT * 0.346, // 292
-        }}>
-        <Carousel
-          ref={c => (this.carousel = c)}
-          data={DATA}
-          renderItem={_renderItem}
-          sliderWidth={SLIDER_WIDTH}
-          itemWidth={ITEM_WIDTH}
-          containerCustomStyle={styles.carouselContainer}
-          inactiveSlideShift={0}
-          onSnapToItem={index => {
-            onSnap(index);
-          }}
-          useScrollView={true}
+
+      <BottomSheet
+        ref={ref => (this.bottomSheetModalRef = ref)}
+        index={1}
+        snapPoints={snapPoints}
+        onChange={handleSheetChanges}>
+        <View
+          style={{
+            flexDirection: 'row',
+            width: SLIDER_WIDTH,
+            // borderWidth:1,
+            // bottom: SLIDER_HEIGHT / 2,
+            justifyContent:'space-between',
+            alignItems:'center',
+            paddingHorizontal:28
+          }}>
+          <Image
+            style={{width: 40, height: 40, borderRadius: 40 / 2,}}
+            source={require('../assets/IMG_0638.jpeg')}
+          />
+          <View style={{width:236,height:34,}}>
+            <Text style={{fontWeight:'400',fontSize:13}}>Seogwipo, Jeju Island, South Korea{'\n'}#JEJU#TRIP</Text>
+          </View>
+          <Like style={{}} size={20} color={'#AEAEAE'} />
+          
+        </View>
+        <View //Carousel Container
+          style={{
+            // position: 'absolute',
+            // bottom: 0,
+            marginTop:12,
+            // borderWidth: 1,
+            height: ITEM_HEIGHT, // 292
+          }}>
+          <Carousel
+            ref={c => (this.carousel = c)}
+            data={DATA}
+            renderItem={_renderItem}
+            sliderWidth={SLIDER_WIDTH}
+            itemWidth={ITEM_WIDTH}
+            containerCustomStyle={styles.carouselContainer}
+            inactiveSlideShift={0}
+            onSnapToItem={index => {
+              onSnap(index);
+            }}
+            useScrollView={true}
+            inactiveSlideScale={0.95}
+            // activeSlideOffset={20}
+          />
+        </View>
+        <Progress.Bar
+          style={{marginVertical: 28, alignSelf: 'center'}}
+          progress={(stateIndex + 1) / assets.assetsObject.length}
+          height={4}
+          width={SLIDER_WIDTH * 0.8}
+          color="black"
+          backgroundColor="rgba(0,0,0,0.2)"
+          borderWidth={0}
         />
-      </View>
-      <View // BottomGradient Container
+      </BottomSheet>
+
+      {/* <View // BottomGradient Container
         style={styles.botGradientContainer}>
         <LinearGradient
           style={{
@@ -234,16 +288,7 @@ export default function MapScreen(props) {
           }}
           colors={['rgba(0,0,0,0.0)', 'rgba(0,0,0,0.4)']}
         />
-        <Progress.Bar
-          style={{top: SLIDER_HEIGHT * 0.03}}
-          progress={stateIndex / (assets.assetsObject.length - 1)}
-          height={4}
-          width={SLIDER_WIDTH * 0.8}
-          color="white"
-          // backgroundColor="white"
-          borderWidth={0}
-        />
-      </View>
+      </View> */}
     </View>
     // </SafeAreaView>
   );
@@ -281,15 +326,16 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
   },
   itemContainer: {
-    top: SLIDER_HEIGHT * 0.018, //  15
+    // width: ITEM_WIDTH,
+    marginHorizontal:7,
+    // marginTop: 10, //  15
     // bottom: SLIDER_HEIGHT * 0.005, // 9
-    width: ITEM_WIDTH,
-    height: ITEM_HEIGHT,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'white',
-    borderRadius: 17,
-    shadowColor: '#000',
+    // height: ITEM_HEIGHT,
+    // alignItems: 'center',
+    // justifyContent: 'center',
+    // backgroundColor: 'red',
+    // borderRadius: 17,
+    // shadowColor: '#000',
     shadowOffset: {
       width: 3,
       height: 3,
