@@ -5,8 +5,8 @@ import HomeScreen from './HomeScreen';
 import AddScreen from './AddScreen';
 import ProfileScreen from './ProfileScreen';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-
-export default function BottomStack() {
+import {pickMultiple} from './AddScreen.js'
+export default function BottomStack(props) {
   const Tab = createBottomTabNavigator();
   return (
     <Tab.Navigator
@@ -28,6 +28,13 @@ export default function BottomStack() {
         }}
       />
       <Tab.Screen
+      listeners={{
+        tabPress : (e)=>{
+          e.preventDefault();
+          // alert('hi')
+          pickMultiple(props);
+        }
+      }}
         name="AddEvent"
         component={AddScreen}
         options={{

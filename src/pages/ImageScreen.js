@@ -64,7 +64,7 @@ export default function ImageScreen(props) {
     <View>
       <View style={{}}>
         <ImageBackground source={imgSrc} style={styles.image2} blurRadius={20}>
-          <View style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.1)'}}></View>
+          <View style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.3)'}}></View>
         </ImageBackground>
         <Image source={imgSrc} style={styles.image} />
       </View>
@@ -78,25 +78,27 @@ export default function ImageScreen(props) {
           onPress={() => {
             changeImage(-1);
           }}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => {
-                console.log(
-                  'props.route.params.coordinates[imgNum]:',
-                  props.route.params.coordinates[imgNum],
-                );
-                props.navigation.navigate('Map', {
-                  index: imgNum,
-                  coordinate: props.route.params.coordinates[imgNum],
-                });
-              }}>
-              <Image source={require('../assets/goback.png')} />
-              <View style={{width: 290}}>
-                <Text  selectable={true} style={{color: 'white', fontWeight: '400', fontSize: 13}}>
-                  {address}
-                </Text>
-              </View>
-            </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              console.log(
+                'props.route.params.coordinates[imgNum]:',
+                props.route.params.coordinates[imgNum],
+              );
+              props.navigation.navigate('Map', {
+                index: imgNum,
+                coordinate: props.route.params.coordinates[imgNum],
+              });
+            }}>
+            <Image source={require('../assets/goback.png')} />
+            <View style={{width: 290}}>
+              <Text
+                selectable={true}
+                style={{color: 'white', fontWeight: '400', fontSize: 13}}>
+                {address}
+              </Text>
+            </View>
+          </TouchableOpacity>
         </TouchableOpacity>
         <TouchableOpacity
           style={{
@@ -174,8 +176,8 @@ const styles = StyleSheet.create({
     width: 44,
     flexDirection: 'row',
     // backgroundColor: 'rgba(100,100,100,0.15)',
-    // justifyContent: 'center', 
-    alignItems:'center'
+    // justifyContent: 'center',
+    alignItems: 'center',
   },
   touchableArea: {
     width: '100%',

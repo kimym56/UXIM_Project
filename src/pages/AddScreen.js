@@ -6,7 +6,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View,SafeAreaView
 } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import Video from 'react-native-video';
@@ -30,6 +30,40 @@ import {
 import {v4 as uuidv4} from 'uuid';
 
 Geocoder.init('AIzaSyAIEOOAcL44fsau394qnzogwV2CDYwym1s', {language: 'en'});
+
+export function pickMultiple(props) {
+  ImagePicker.openPicker({
+    multiple: true,
+    waitAnimationEnd: false,
+    sortOrder: 'desc',
+    includeExif: true,
+    forceJpg: true,
+  })
+    .then(images => {
+      // console.log('images : ', images);
+      const temp = images.map(i => {
+        // console.log('received exif', i.exif['{GPS}']);
+        return {
+          uri: i.path,
+          width: i.width,
+          height: i.height,
+          mime: i.mime,
+          gps: i.exif['{GPS}'],
+        };
+      });
+      // setImageState({
+      //   images: temp,
+      // });
+      return temp;
+    })
+    .then(ret => {
+      // console.log('ret : ', ret),
+        props.navigation.navigate('Edit', {images: ret});
+    })
+    .catch(e => console.log('alert:',e));
+};
+
+
 export default function AddScreen(props) {
   useEffect(() => {
     pickMultiple();
@@ -49,106 +83,38 @@ export default function AddScreen(props) {
       longitude: item.gps.Longitude,
     });
   };
-  const addData = async () => {
-    const collectionRef = collection(db, 'Route');
-    // const imagesTemp =
-    // const payload = {
-    //   date: new Date(),
-    //   images: imagesTemp,
-    //   like: 0,
-    //   private: false,
-    //   tag: [],
-    //   title: '',
-    //   writer: 'kimym56',
-    // };
-    // await new Promise((resolve, reject) => setTimeout(resolve, 3000));
-    // console.log('imagesTemp : ', imagesTemp);
+  const uploadImage = async item => {
+    const uri = item.uri;
+    const filename = uri.substring(uri.lastIndexOf('/') + 1);
+    const storageRef = ref(storage, `images/${filename}`);
 
-    const docRef = await addDoc(collectionRef, {
-      date: new Date(),
-      images: new Array(),
-      like: 0,
-      private: false,
-      tag: [],
-      title: '',
-      writer: 'kimym56',
-    });
-    imageState.images.map((item, index) => {
-      console.log('index: ', index);
-      getFullAddress(item).then(res => {
-        updateDoc(docRef, {
-          images: arrayUnion({
-            geo: new GeoPoint(item.gps.Latitude, item.gps.Longitude),
-            geocoding: res.results[0].formatted_address,
-            uri: item.uri,
-          }),
-        });
-      });
-    });
-    const colRef = collection(docRef, 'chat_log');
-    console.log('docRef : ', docRef);
-    // await addDoc(colRef, {
-    //   comment: 'default',
-    //   date: new Date(),
-    //   like: 0,
-    //   writer: 'user1',
-    // });
-  };
-
-  const sleep = ms => {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  };
-  const uploadImage = async () => {
-    console.log('imageState : ', imageState);
+    const img = await fetch(uri);
+    const bytes = await img.blob();
+    const uploadTask = await uploadBytesResumable(storageRef, bytes);
+    return storageRef._location.path_;
     // const promises = [];
-    imageState.images.map(async file => {
-      const coordinate = {
-        latitude: file.gps.Latitude,
-        longitude: file.gps.Longitude,
-      };
-      console.log('co : ', coordinate);
-      Geocoder.from(coordinate)
-        .then(json => {
-          console.log('json: ', json.results[0].formatted_address);
-          // setAdress(json.results[0].formatted_address);
-          // console.log('address :', addressComponent);
-        })
-        .catch(error => console.warn(error));
-
-      console.log('i : ', file);
-      const uri = file.uri;
-      const filename = uri.substring(uri.lastIndexOf('/') + 1);
-      const storageRef = ref(storage, `images/${filename}`);
-
-      const img = await fetch(uri);
-      const bytes = await img.blob();
-      const uploadTask = await uploadBytesResumable(storageRef, bytes);
-
-      //   promises.push(uploadTask);
-
-      //   uploadTask.on(
-      //     "state_changed",
-      //     (snapshot) => {
-      //         const prog = Math.round(
-      //             (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-      //         );
-      //         // setProgress(prog);
-      //     },
-      //     (error) => console.log(error),
-      //     async () => {
-      //         await getDownloadURL(uploadTask.snapshot.ref).then((downloadURLs) => {
-      //             // setURLs(prevState => [...prevState, downloadURLs])
-      //             // console.log("File available at", downloadURLs);
-      //         });
-      //     }
-      // );
-
-      // const img = await fetch(uri);
-      // const bytes =  await img.blob();
-      // console.log('bytes : ',bytes)
-
-      // await uploadBytes(ref, bytes); //upload images
-    });
+    //   promises.push(uploadTask);
+    //   uploadTask.on(
+    //     "state_changed",
+    //     (snapshot) => {
+    //         const prog = Math.round(
+    //             (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+    //         );
+    //         // setProgress(prog);
+    //     },
+    //     (error) => console.log(error),
+    //     async () => {
+    //         await getDownloadURL(uploadTask.snapshot.ref).then((downloadURLs) => {
+    //             // setURLs(prevState => [...prevState, downloadURLs])
+    //             // console.log("File available at", downloadURLs);
+    //         });
+    //     }
+    // );
+    // const img = await fetch(uri);
+    // const bytes =  await img.blob();
+    // console.log('bytes : ',bytes)
+    // await uploadBytes(ref, bytes); //upload images
+    /////////////////////////////////////////////////////////////////////////////////
     // Promise.all(promises)
     // .then(() => alert("All images uploaded"))
     // .catch((err) => console.log(err));
@@ -218,38 +184,80 @@ export default function AddScreen(props) {
     // );
     // setImage(null);
   };
-  const pickSingle = (cropit, circular = false, mediaType) => {
-    ImagePicker.openPicker({
-      cropping: cropit,
-      cropperCircleOverlay: circular,
-      sortOrder: 'none',
-      compressImageMaxWidth: 1000,
-      compressImageMaxHeight: 1000,
-      compressImageQuality: 1,
-      compressVideoPreset: 'MediumQuality',
-      includeExif: true,
-      cropperStatusBarColor: 'white',
-      cropperToolbarColor: 'white',
-      cropperActiveWidgetColor: 'white',
-      cropperToolbarWidgetColor: '#3498DB',
-    })
-      .then(image => {
-        console.log('received image', image);
+  const addData = async () => {
+    const collectionRef = collection(db, 'Route');
+    const docRef = await addDoc(collectionRef, {
+      date: new Date(),
+      images: new Array(),
+      like: 0,
+      private: false,
+      tag: [],
+      title: 'defaultTitle',
+      writer: 'defaultWriter',
+    });
+    const colRef = collection(docRef, 'chat_log');
+    await addDoc(colRef, {
+      comment: 'defaultComment',
+      date: new Date(),
+      like: 0,
+      writer: 'defaultWriter',
+    });
 
-        setImageState({
-          images: {
-            uri: image.path,
-            width: image.width,
-            height: image.height,
-            mime: image.mime,
-          },
-        });
-      })
-      .catch(e => {
-        console.log(e);
-        Alert.alert(e.message ? e.message : e);
-      });
+    imageState.images.map((item, index) => {
+      console.log('index: ', index);
+      uploadImage(item)
+        .then(imageUri => {
+          console.log('imageUri : ', imageUri);
+          getFullAddress(item).then(res => {
+            updateDoc(docRef, {
+              images: arrayUnion({
+                geo: new GeoPoint(item.gps.Latitude, item.gps.Longitude),
+                geocoding: res.results[0].formatted_address,
+                uri: imageUri,
+              }),
+            });
+          });
+        })
+        .then(() => alert('All images uploaded'));
+    });
   };
+
+  const sleep = ms => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  };
+
+  // const pickSingle = (cropit, circular = false, mediaType) => {
+  //   ImagePicker.openPicker({
+  //     cropping: cropit,
+  //     cropperCircleOverlay: circular,
+  //     sortOrder: 'none',
+  //     compressImageMaxWidth: 1000,
+  //     compressImageMaxHeight: 1000,
+  //     compressImageQuality: 1,
+  //     compressVideoPreset: 'MediumQuality',
+  //     includeExif: true,
+  //     cropperStatusBarColor: 'white',
+  //     cropperToolbarColor: 'white',
+  //     cropperActiveWidgetColor: 'white',
+  //     cropperToolbarWidgetColor: '#3498DB',
+  //   })
+  //     .then(image => {
+  //       console.log('received image', image);
+
+  //       setImageState({
+  //         images: {
+  //           uri: image.path,
+  //           width: image.width,
+  //           height: image.height,
+  //           mime: image.mime,
+  //         },
+  //       });
+  //     })
+  //     .catch(e => {
+  //       console.log(e);
+  //       Alert.alert(e.message ? e.message : e);
+  //     });
+  // };
 
   const pickMultiple = () => {
     ImagePicker.openPicker({
@@ -261,25 +269,31 @@ export default function AddScreen(props) {
     })
       .then(images => {
         console.log('images : ', images);
-        setImageState({
-          images: images.map(i => {
-            console.log('received exif', i.exif['{GPS}']);
-            return {
-              uri: i.path,
-              width: i.width,
-              height: i.height,
-              mime: i.mime,
-              gps: i.exif['{GPS}'],
-            };
-          }),
+        const temp = images.map(i => {
+          console.log('received exif', i.exif['{GPS}']);
+          return {
+            uri: i.path,
+            width: i.width,
+            height: i.height,
+            mime: i.mime,
+            gps: i.exif['{GPS}'],
+          };
         });
+        setImageState({
+          images: temp,
+        });
+        return temp;
+      })
+      .then(ret => {
+        console.log('ret : ', ret),
+          props.navigation.navigate('Edit', {images: ret});
       })
       .catch(e => alert(e));
   };
 
-  const scaledHeight = (oldW, oldH, newW) => {
-    return (oldH / oldW) * newW;
-  };
+  // const scaledHeight = (oldW, oldH, newW) => {
+  //   return (oldH / oldW) * newW;
+  // };
 
   const renderImage = image => {
     return (
@@ -297,57 +311,60 @@ export default function AddScreen(props) {
 
     return renderImage(image);
   };
-  const cropLast = () => {
-    if (!image) {
-      return Alert.alert(
-        'No image',
-        'Before open cropping only, please select image',
-      );
-    }
+  // const cropLast = () => {
+  //   if (!image) {
+  //     return Alert.alert(
+  //       'No image',
+  //       'Before open cropping only, please select image',
+  //     );
+  //   }
 
-    ImagePicker.openCropper({
-      path: image.uri,
-      width: 300,
-      height: 400,
-    })
-      .then(image => {
-        console.log('received cropped image', image);
-        this.setState({
-          image: {
-            uri: image.path,
-            width: image.width,
-            height: image.height,
-            mime: image.mime,
-          },
-          images: null,
-        });
-      })
-      .catch(e => {
-        console.log(e);
-        Alert.alert(e.message ? e.message : e);
-      });
-  };
-  console.log('img : ', imageState);
+  //   ImagePicker.openCropper({
+  //     path: image.uri,
+  //     width: 300,
+  //     height: 400,
+  //   })
+  //     .then(image => {
+  //       console.log('received cropped image', image);
+  //       this.setState({
+  //         image: {
+  //           uri: image.path,
+  //           width: image.width,
+  //           height: image.height,
+  //           mime: image.mime,
+  //         },
+  //         images: null,
+  //       });
+  //     })
+  //     .catch(e => {
+  //       console.log(e);
+  //       Alert.alert(e.message ? e.message : e);
+  //     });
+  // };
+  // console.log('img : ', imageState);
   return (
-    <View style={styles.container}>
-      <ScrollView>
-        {imageState.image ? renderAsset(imageState.image) : null}
-        {imageState.images
-          ? imageState.images.map(i => (
-              <View key={i.uri}>{renderAsset(i)}</View>
-            ))
-          : null}
-      </ScrollView>
-      <TouchableOpacity onPress={() => pickSingle(false)} style={styles.button}>
+    <SafeAreaView style={styles.container}>
+      {imageState ? (
+        <ScrollView>
+          {imageState.image ? renderAsset(imageState.image) : null}
+          {imageState.images
+            ? imageState.images.map(i => (
+                <View key={i.uri}>{renderAsset(i)}</View>
+              ))
+            : null}
+        </ScrollView>
+      ) : (
+        <Image
+          source={require('../assets/loading2.png')}
+          style={{width: 40, height: 40}}
+        />
+      )}
+
+      {/* <TouchableOpacity onPress={() => pickSingle(false)} style={styles.button}>
         <Text style={styles.text}>Select Single</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={pickMultiple.bind(this)} style={styles.button}>
+      </TouchableOpacity> */}
+      {/* <TouchableOpacity onPress={pickMultiple.bind(this)} style={styles.button}>
         <Text style={styles.text}>Select Multiple</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => uploadImage(imageState)}>
-        <Text style={styles.text}>Upload Image</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => getData()}>
         <Text style={styles.text}>Get data</Text>
@@ -355,16 +372,16 @@ export default function AddScreen(props) {
 
       <TouchableOpacity style={styles.button} onPress={() => addData()}>
         <Text style={styles.text}>Add data</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => cropLast()} style={styles.button}>
+      </TouchableOpacity> */}
+      {/* <TouchableOpacity onPress={() => cropLast()} style={styles.button}>
         <Text style={styles.text}>Crop Last Selected Image</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
+      </TouchableOpacity> */}
+      {/* <TouchableOpacity
         onPress={() => {
           console.log('imageState : ', imageState.images);
         }}
         style={styles.button}>
-        <Text style={styles.text}>check</Text>
+        <Text style={styles.text}>state check</Text>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() =>
@@ -372,8 +389,8 @@ export default function AddScreen(props) {
         }
         style={styles.button}>
         <Text style={styles.text}>navigate</Text>
-      </TouchableOpacity>
-    </View>
+      </TouchableOpacity> */}
+    </SafeAreaView>
   );
 }
 
@@ -381,6 +398,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+    // backgroundColor: 'white',
     alignItems: 'center',
   },
   button: {
