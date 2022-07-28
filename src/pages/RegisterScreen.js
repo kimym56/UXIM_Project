@@ -16,7 +16,7 @@ export default function RegisterScreen(props) {
         props.navigation.goBack()
       })
       .catch(re => {
-        console.log(re);
+        console.log('error in RegisterScreen:',re);
       });
   };
   return (

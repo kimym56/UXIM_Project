@@ -25,38 +25,39 @@ import * as Progress from 'react-native-progress';
 import LinearGradient from 'react-native-linear-gradient';
 import {mapStyle} from '../styles/mapStyle';
 import {Like} from '../assets/Button/Like';
+import {storage} from '../../firebase/firebase-config';
+import {ref, getDownloadURL} from 'firebase/storage';
 const assets = require('../assets/assets.js');
 const SLIDER_WIDTH = Dimensions.get('window').width;
 const SLIDER_HEIGHT = Dimensions.get('window').height;
 const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.546);
 const ITEM_HEIGHT = Math.round((ITEM_WIDTH * 3) / 4);
-const DATA = [];
 const coordinates = [];
-for (let i = 0; i < 14; i++) {
-  DATA.push({
-    index: i,
-    uri: '/Users/kimyoungmin/UXIM_Project0621/src/assets/IMG_' + i + '.jpeg',
-    name: i,
-    item: assets.assetsObject[i],
-  });
-}
-async function getExif(uri, index) {
-  const b64Buffer = await RNFS.readFile(uri, 'base64'); // Where the URI looks like this: "file:///path/to/image/IMG_0123.HEIC"
-  const fileBuffer = decode(b64Buffer);
-  const tags = ExifReader.load(fileBuffer, {expanded: true});
-  const coordinate = {
-    latitude: tags.gps.Latitude,
-    longitude: tags.gps.Longitude,
-  };
-  console.log('getExif : ' + uri);
-  console.log('cor: ', coordinate);
-  assets.markers[index].coordinate = coordinate;
-  coordinates.push(coordinate);
-}
-for (index = 0; index < 14; index++) {
-  console.log('index : ', index);
-  getExif(DATA[index].uri, index);
-}
+// for (let i = 0; i < 14; i++) {
+//   DATA.push({
+//     index: i,
+//     uri: '/Users/kimyoungmin/UXIM_Project0621/src/assets/IMG_' + i + '.jpeg',
+//     name: i,
+//     item: assets.assetsObject[i],
+//   });
+// }
+// async function getExif(uri, index) {
+//   const b64Buffer = await RNFS.readFile(uri, 'base64'); // Where the URI looks like this: "file:///path/to/image/IMG_0123.HEIC"
+//   const fileBuffer = decode(b64Buffer);
+//   const tags = ExifReader.load(fileBuffer, {expanded: true});
+//   const coordinate = {
+//     latitude: tags.gps.Latitude,
+//     longitude: tags.gps.Longitude,
+//   };
+//   // console.log('getExif : ' + uri);
+//   // console.log('cor: ', coordinate);
+//   assets.markers[index].coordinate = coordinate;
+//   coordinates.push(coordinate);
+// }
+// for (index = 0; index < 14; index++) {
+//   console.log('index in MapScreen: ', index);
+//   getExif(DATA[index].uri, index);
+// }
 // DATA[0].item = require('../assets/IMG_0.jpeg');
 // DATA[1].item = require('../assets/IMG_1.jpeg');
 // DATA[2].item = require('../assets/IMG_2.jpeg');
@@ -70,31 +71,61 @@ for (index = 0; index < 14; index++) {
 
 export default function MapScreen(props) {
   console.log('Mapscreen render');
-  // console.log(props);
+  console.log('props in MapScreen :', props.route.params.data.images[0].geo);
   const [stateIndex, setIndex] = useState(0);
-  const [gps, setGPS] = useState(props.route.params.coordinate);
-
+  const [gps, setGPS] = useState(props.route.params.data.images[0].geo);
   const snapPoints = ['9%', '38%', '40%'];
   const [snapIndex, setSnapIndex] = useState(1);
-
+  const [imgUris, setImgUris] = useState();
   const handleSheetChanges = useCallback(index => {
     console.log('handleSheetChanges in MapScreen', index);
     setSnapIndex(index);
   }, []);
   // console.log('gps:', gps);
-  useEffect(() => {
-    props.route.params.index
-      ? this.carousel.snapToItem(props.route.params.index)
-      : null;
-    console.log('useEffect done');
-  }, [props.route.params]);
-  const onSnap = index => {
-    this.map.animateToRegion(assets.markers[index].coordinate);
+  const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    var temp = [];
+    props.route.params.data.images.map((item, index) => {
+      const reference = ref(storage, item.uri);
+      getDownloadURL(reference).then(ret => {
+        // console.log('url : ', ret);
+        temp.push(ret);
+      });
+    });
+    setTimeout(() => setIsLoading(true), 1000);
+    setImgUris(temp);
+    console.log('useEffect done');
+  }, []);
+  useEffect(() => {
+    this.carousel.snapToItem(props.route.params.index);
+  }, [props.route.params.index]);
+  const onSnap = index => {
+    const corTemp = props.route.params.data.images[index].geo;
+    console.log('cor : ', assets.markers[index].coordinate);
+    this.map.animateToRegion({
+      latitude: props.route.params.data.images[index].geo.latitude,
+      longitude: props.route.params.data.images[index].geo.longitude,
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.01,
+    });
+    // setGPS[props.route.params.data.images[index].geo]
     // setGPS(assets.markers[index].coordinate);
     setIndex(index);
   };
+  const setMapReady = () => {
+    var markers = props.route.params.data.images.map(item => {
+      return {
+        latitude: item.geo.latitude,
+        longitude: item.geo.longitude,
+      };
+    });
 
+    console.log('mapReady : ', markers);
+    this.map.fitToCoordinates(markers, {
+      edgePadding: {top: 100, right: 100, bottom: 100, left: 100},
+    });
+  };
   // const setIndexAfterGoBack = (index) => {
   //   setIndex(index)
   // };
@@ -102,19 +133,28 @@ export default function MapScreen(props) {
     // return <Category imageUri={"https://cdn.pixabay.com/photo/2018/04/25/09/26/eiffel-tower-3349075_1280.jpg"}/>;
     return (
       <View style={styles.itemContainer}>
-        {/* <Text style={styles.itemLabel}>{`Item ${item.index}`}</Text> */}
         <TouchableOpacity
           style={{width: '100%'}}
           onPress={() => {
             props.navigation.navigate('Image', {
-              data: DATA[index],
-              coordinates: coordinates,
+              index: index,
+              data: props.route.params.data,
+              imgUris: imgUris,
             });
           }}>
-          <Image
-            style={{width: '100%', height: '100%', borderRadius: 17}}
-            source={DATA[index].item}
-          />
+          {isLoading ? (
+            <Image
+              style={{
+                width: '100%',
+                height: '100%',
+                borderRadius: 17,
+                // borderWidth:1
+              }}
+              source={{uri: imgUris[index]}}
+            />
+          ) : null}
+
+          {/* <Text>{imgUris[index]}</Text> */}
         </TouchableOpacity>
       </View>
     );
@@ -129,52 +169,46 @@ export default function MapScreen(props) {
           this.map = ref;
         }}
         style={styles.map}
+        onMapReady={setMapReady}
         customMapStyle={mapStyle}
         initialRegion={{
           latitude: gps.latitude,
           longitude: gps.longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
         }}>
         {/* {console.log('assets.markers : ', assets.markers)} */}
-        {assets
-          ? assets.markers.map((marker, index) => {
-              return (
-                <Marker key={index} coordinate={marker.coordinate}>
-                  {stateIndex == index ? (
-                    <Image
-                      source={require('../assets/UXIM_icon-05.png')}
-                      style={{width: 40, height: 40}}
-                    />
-                  ) : (
-                    <Image
-                      source={require('../assets/UXIM_icon-03.png')}
-                      style={{width: 30, height: 30}}
-                    />
-                  )}
-                </Marker>
-              );
-            })
-          : null}
+        {props.route.params.data.images.map((marker, index) => {
+          console.log('marker : ', marker.geo);
+          console.log('marker2 : ', assets.markers[index].coordinate);
+
+          return (
+            <Marker
+              key={index}
+              coordinate={{
+                latitude: marker.geo.latitude,
+                longitude: marker.geo.longitude,
+              }}>
+              {stateIndex == index ? (
+                <Image
+                  source={require('../assets/UXIM_icon-05.png')}
+                  style={{width: 40, height: 40}}
+                />
+              ) : (
+                <Image
+                  source={require('../assets/UXIM_icon-03.png')}
+                  style={{width: 30, height: 30}}
+                />
+              )}
+            </Marker>
+          );
+        })}
         {/* {console.log('coordinates : ', coordinates)} */}
         <Polyline
-          coordinates={[
-            {latitude: 48.855725, longitude: 2.2985333333333333},
-            {latitude: 45.431688888888885, longitude: 12.328972222222221},
-            {latitude: 45.46463055555556, longitude: 9.190441666666667},
-            {latitude: 44.10744444444445, longitude: 9.72565},
-            {latitude: 41.23578333333334, longitude: 1.813225},
-            {latitude: 46.54750555555555, longitude: 7.985102777777778},
-            {latitude: 37.560027777777776, longitude: 126.93705833333334},
-            {latitude: 37.56262222222222, longitude: 126.9373638888889},
-            {latitude: 37.56579722222222, longitude: 126.9386138888889},
-            {latitude: 37.700875, longitude: 126.37917222222221},
-            {latitude: 33.256594444444445, longitude: 126.53916111111111},
-            {latitude: 33.256594444444445, longitude: 126.53916111111111},
-
-            {latitude: 33.256594444444445, longitude: 126.53916111111111},
-            {latitude: 33.256594444444445, longitude: 126.53916111111111},
-          ]}
+          coordinates={props.route.params.data.images.map(item => {
+            return {
+              latitude: item.geo.latitude,
+              longitude: item.geo.longitude,
+            };
+          })}
           // strokeColors={[
           //   '#7F0000',
           //   '#00000000', // no color, creates a "long" gradient between the previous and next coordinate
@@ -229,31 +263,32 @@ export default function MapScreen(props) {
             width: SLIDER_WIDTH,
             // borderWidth:1,
             // bottom: SLIDER_HEIGHT / 2,
-            justifyContent:'space-between',
-            alignItems:'center',
-            paddingHorizontal:28
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingHorizontal: 28,
           }}>
           <Image
-            style={{width: 40, height: 40, borderRadius: 40 / 2,}}
+            style={{width: 40, height: 40, borderRadius: 40 / 2}}
             source={require('../assets/IMG_0638.jpeg')}
           />
-          <View style={{width:236,height:34,}}>
-            <Text style={{fontWeight:'400',fontSize:13}}>Seogwipo, Jeju Island, South Korea{'\n'}#JEJU#TRIP</Text>
+          <View style={{width: 236, height: 34}}>
+            <Text style={{fontWeight: '400', fontSize: 13}}>
+              {props.route.params.data.images[stateIndex].geocoding}
+            </Text>
           </View>
           <Like style={{}} size={20} color={'#AEAEAE'} />
-          
         </View>
         <View //Carousel Container
           style={{
             // position: 'absolute',
             // bottom: 0,
-            marginTop:12,
+            marginTop: 12,
             // borderWidth: 1,
             height: ITEM_HEIGHT, // 292
           }}>
           <Carousel
             ref={c => (this.carousel = c)}
-            data={DATA}
+            data={imgUris}
             renderItem={_renderItem}
             sliderWidth={SLIDER_WIDTH}
             itemWidth={ITEM_WIDTH}
@@ -269,7 +304,7 @@ export default function MapScreen(props) {
         </View>
         <Progress.Bar
           style={{marginVertical: 28, alignSelf: 'center'}}
-          progress={(stateIndex + 1) / assets.assetsObject.length}
+          progress={(stateIndex + 1) / props.route.params.data.images.length}
           height={4}
           width={SLIDER_WIDTH * 0.8}
           color="black"
@@ -327,7 +362,7 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     // width: ITEM_WIDTH,
-    marginHorizontal:7,
+    marginHorizontal: 7,
     // marginTop: 10, //  15
     // bottom: SLIDER_HEIGHT * 0.005, // 9
     // height: ITEM_HEIGHT,

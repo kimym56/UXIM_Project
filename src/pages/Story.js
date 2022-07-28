@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import MapView,{ PROVIDER_GOOGLE }  from 'react-native-maps';
+import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import RNFS from '../../node_modules/react-native-fs';
 import QAScreen from './QAScreen';
 import {Like} from '../assets/Button/Like';
@@ -15,9 +15,12 @@ import {Bookmark} from '../assets/Button/Bookmark';
 import {QA} from '../assets/Button/QA.js';
 import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import {CustomFooter} from './CustomFooter.js';
-
+import {storage} from '../../firebase/firebase-config';
+import {getDownloadURL, ref} from 'firebase/storage';
 const SLIDER_WIDTH = Dimensions.get('window').width;
 const SLIDER_HEIGHT = Dimensions.get('window').height;
+import LinearGradient from 'react-native-linear-gradient';
+
 // const b64Buffer = await RNFS.readFile('file://../src/assets/IMG_0596.heic', 'base64') // Where the URI looks like this: "file:///path/to/image/IMG_0123.HEIC"
 // const fileBuffer = decode(b64Buffer)
 // const tags = ExifReader.load(fileBuffer, {expanded: true});
@@ -25,12 +28,24 @@ const SLIDER_HEIGHT = Dimensions.get('window').height;
 // const lat = tags['gps']['Latitude'];
 // const long = tags['gps']['Longitude'];
 
-export default function Story({navigation}) {
+export default function Story(props) {
+  const [imgUri, setImgUri] = useState();
+  useEffect(() => {
+    const reference = ref(storage, props.data.images[0].uri);
+    getDownloadURL(reference).then(ret => setImgUri(ret));
+  }, []);
+
   console.log('Story render');
-  console.log(RNFS.CachesDirectoryPath);
-  const [lat, long] = [48.855725, 2.2985333333333333];
+  // console.log('props in Story: ', props);
+  // console.log('data : ', props.data?.images[0].geo);
+  // console.log('imgUri: ',imgUri)
+  // console.log(RNFS.CachesDirectoryPath);
+  const [lat, long] = [
+    props.data.images[0].geo.latitude,
+    props.data.images[0].geo.longitude,
+  ];
+  // const [lat, long] = [48.855725, 2.2985333333333333];
   var [lat2, long2] = [37.566, 126.937];
-  var img = require('../assets/IMG_0.jpeg');
   var imgSource = 'IMG_0.jpeg';
   const snapPoints = ['50%', '50%', '100%'];
 
@@ -42,7 +57,7 @@ export default function Story({navigation}) {
   return (
     <View style={styles.container}>
       <MapView
-      // provider={PROVIDER_GOOGLE}
+        // provider={PROVIDER_GOOGLE}
         style={styles.map}
         initialRegion={{
           latitude: lat,
@@ -54,50 +69,66 @@ export default function Story({navigation}) {
       <TouchableOpacity
         style={styles.touchable}
         onPress={() => {
-          navigation.navigate('Map', {
+          props.navigation.navigate('Map', {
+            data: props.data,
             coordinate: {latitude: lat, longitude: long},
           });
         }}>
-        <Image source={img} style={styles.image} />
+        <Image source={{uri: imgUri}} style={styles.image} />
       </TouchableOpacity>
       <View
         style={{
-          // borderWidth:1,
-          bottom: 20,
+          // borderWidth: 1,
+          // backgroundColor:'rgba(0,0,0,0.05)',
+          bottom: 0,
+          height:60,
           position: 'absolute',
           // height: SLIDER_HEIGHT * 0.118, // 60
-          width: SLIDER_WIDTH, // 390
+          width: '100%', // 390
           alignItems: 'center',
+          justifyContent: 'space-between',
+          flexDirection: 'row',
         }}>
-        <View
+          <LinearGradient
           style={{
-            flexDirection: 'row',
-            width: SLIDER_WIDTH,
-            // borderWidth:1,
-            // bottom: SLIDER_HEIGHT / 2,
-            alignItems: 'center',
-          }}>
-          <Image
+            position: 'absolute',
+            height: '100%',
+            width: '100%',
+          }}
+          colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.8)']}
+        />
+        <Image
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 40 / 2,
+            marginLeft: 20,
+          }}
+          source={require('../assets/IMG_0638.jpeg')}
+        />
+        <View style={{marginLeft: 14, width: 256}}>
+          <Text
+            selectable={true}
             style={{
-              width: 40,
-              height: 40,
-              borderRadius: 40 / 2,
-              marginLeft: 20,
-            }}
-            source={require('../assets/IMG_0638.jpeg')}
-          />
-          <Like style={{marginLeft: 190}} size={20} color={'white'} />
-          <QA
+              // backgroundColor: 'rgba(0,0,0,0.2)',
+              color: 'white',
+              fontWeight: '700',
+              fontSize: 15,
+            }}>
+            {props.data.title}
+          </Text>
+        </View>
+        <Like style={{right: 20}} size={20} color={'white'} />
+        {/* <QA
             style={{marginLeft: 12}}
             onPress={() => {
               bottomSheetModalRef.present();
             }}
           />
-          <Bookmark style={{marginLeft: 12}} />
-        </View>
+          <Bookmark style={{marginLeft: 12}} /> */}
       </View>
 
-      <BottomSheetModal
+      {/* <BottomSheetModal
         ref={ref => (this.bottomSheetModalRef = ref)}
         index={1}
         snapPoints={snapPoints}
@@ -107,7 +138,7 @@ export default function Story({navigation}) {
           bottomSheetModalRef={this.bottomSheetModalRef}
           snapIndex={snapIndex}
         />
-      </BottomSheetModal>
+      </BottomSheetModal> */}
     </View>
   );
 }

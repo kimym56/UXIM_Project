@@ -101,7 +101,10 @@ export default function QAScreen({bottomSheetModalRef, snapIndex}) {
   console.log('QAScreen Rendering');
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    wait(1000).then(() => setRefreshing(false));
+    wait(1000).then(() => setRefreshing(false))
+    .catch(err => {
+      console.log('error in QAScreen:',err);
+    });;
   }, []);
   const [refreshing, setRefreshing] = React.useState(false);
   console.log('bottomSheetModalRef : ', this.bottomSheetModalRef);

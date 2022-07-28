@@ -24,10 +24,10 @@ import LoginScreen from './src/pages/LoginScreen';
 import RegisterScreen from './src/pages/RegisterScreen';
 import EditImageScreen from './src/pages/EditImageScreen';
 import EditRouteScreen from './src/pages/EditRouteScreen';
-LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
-LogBox.ignoreAllLogs();//Ignore all log notifications
+// LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+// LogBox.ignoreAllLogs();//Ignore all log notifications
 export default function App() {
-  LogBox.ignoreLogs(['Warning: ...']);
+  // LogBox.ignoreLogs(['Warning: ...']);
   const isDarkMode = useColorScheme() === 'dark';
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,

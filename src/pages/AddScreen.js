@@ -66,7 +66,7 @@ export function pickMultiple(props) {
 
 export default function AddScreen(props) {
   useEffect(() => {
-    pickMultiple();
+    // pickMultiple();
   });
   console.log('props : ', props);
   const [imageState, setImageState] = useState({images: null});
@@ -204,7 +204,7 @@ export default function AddScreen(props) {
     });
 
     imageState.images.map((item, index) => {
-      console.log('index: ', index);
+      console.log('index in AddScreen: ', index);
       uploadImage(item)
         .then(imageUri => {
           console.log('imageUri : ', imageUri);
@@ -218,7 +218,10 @@ export default function AddScreen(props) {
             });
           });
         })
-        .then(() => alert('All images uploaded'));
+        .then(() => alert('All images uploaded'))
+        .catch(err => {
+          console.log('error in AddScreen:',err);
+        });
     });
   };
 
@@ -344,6 +347,7 @@ export default function AddScreen(props) {
   // console.log('img : ', imageState);
   return (
     <SafeAreaView style={styles.container}>
+      
       {imageState ? (
         <ScrollView>
           {imageState.image ? renderAsset(imageState.image) : null}
@@ -370,9 +374,7 @@ export default function AddScreen(props) {
         <Text style={styles.text}>Get data</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => addData()}>
-        <Text style={styles.text}>Add data</Text>
-      </TouchableOpacity> */}
+       */}
       {/* <TouchableOpacity onPress={() => cropLast()} style={styles.button}>
         <Text style={styles.text}>Crop Last Selected Image</Text>
       </TouchableOpacity> */}
@@ -398,7 +400,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    // backgroundColor: 'white',
+    backgroundColor: 'white',
     alignItems: 'center',
   },
   button: {

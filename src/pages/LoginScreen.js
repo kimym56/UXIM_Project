@@ -16,7 +16,7 @@ export default function LoginScreen(props) {
         props.navigation.goBack();
       })
       .catch(error => {
-        console.log(error)
+        console.log('error in LoginScreen:',error)
         const errorCode = error.code;
         const errorMessage = error.message;
       });

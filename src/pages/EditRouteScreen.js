@@ -107,7 +107,7 @@ export default function EditRouteScreen(props) {
     });
 
     images.map((item, index) => {
-      console.log('index: ', index);
+      console.log('index in EditRouteScreen: ', index);
       uploadImage(item)
         .then(imageUri => {
           console.log('imageUri : ', imageUri);
@@ -121,9 +121,15 @@ export default function EditRouteScreen(props) {
             });
           });
         })
+        .catch(err => {
+          console.log('error in EditRouteScreen:',err);
+        })
     })
-    .then(() => props.navigation.navigate('Stack'))
-    .then(() => alert('All images uploaded'));
+    .then(() => alert('All images uploaded'))
+    .catch(err => {
+      console.log('error in EditRouteScreen2:',err);
+    });
+    props.navigation.navigate('Stack')
   };
 
   return (

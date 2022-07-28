@@ -24,7 +24,10 @@ export default function EditImageScreen(props) {
   Geocoder.from({
     latitude: images[imgNum].gps.Latitude,
     longitude: images[imgNum].gps.Longitude,
-  }).then(ret => setGeocoder(ret.results[0].formatted_address));
+  }).then(ret => setGeocoder(ret.results[0].formatted_address))
+  .catch(err => {
+    console.log('error in EditImageSreen:',err);
+  });
   if (images) {
     return (
       <View style={{}}>
@@ -102,7 +105,7 @@ export default function EditImageScreen(props) {
         </View>
         <Progress.Bar
           style={{position: 'absolute', bottom: 40, left: 40}} // 25
-          progress={images.length > 1 ? imgNum + 1 / images.length : 1}
+          progress={(imgNum + 1) / images.length}
           height={4}
           width={SLIDER_WIDTH * 0.8} //312
           color="white"

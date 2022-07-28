@@ -24,24 +24,20 @@ const SLIDER_HEIGHT = Dimensions.get('window').height;
 const assets = require('../assets/assets.js');
 export default function ImageScreen(props) {
   console.log('ImageScreen render');
-  console.log(
-    'Slider Width : ',
-    SLIDER_WIDTH,
-    'Slider Height : ',
-    SLIDER_HEIGHT,
-  );
-  // console.log('this.bottomSheetModalRef.index: ', this.bottomSheetModalRef);
-  // console.log('***props*** : ', props);
-  // console.log('***props.route*** : ', props.route);
-  // console.log('***props.route.params.data : ***', props.route.params.data);
-  // console.log(assets.assetsObject);
-  var src = props.route.params.data.name;
+  console.log('props in imageScreen:',props.route.params)
+  // console.log(
+  //   'Slider Width : ',
+  //   SLIDER_WIDTH,
+  //   'Slider Height : ',
+  //   SLIDER_HEIGHT,
+  // );
+  var src = props.route.params.index;
   const [imgNum, setIndex] = useState(src);
-  const [imgSrc, setImgSrc] = useState(assets.assetsObject[imgNum]);
+  const [imgSrc, setImgSrc] = useState(props.route.params.imgUris[imgNum]);
   const changeImage = num => {
     if (imgNum + num >= 0 && imgNum + num < 14) {
       setIndex(imgNum + num);
-      setImgSrc(assets.assetsObject[imgNum + num]);
+      setImgSrc(props.route.params.imgUris[imgNum + num]);
     }
   };
   const snapPoints = ['50%', '50%', '100%'];
@@ -51,22 +47,14 @@ export default function ImageScreen(props) {
     console.log('handleSheetChanges', index);
     setSnapIndex(index);
   }, []);
-  Geocoder.init('AIzaSyAIEOOAcL44fsau394qnzogwV2CDYwym1s', {language: 'en'});
-  Geocoder.from(props.route.params.coordinates[imgNum])
-    .then(json => {
-      console.log('json: ', json.results[0]);
-      setAdress(json.results[0].formatted_address);
-      // console.log('address :', addressComponent);
-    })
-    .catch(error => console.warn(error));
-
+  
   return (
     <View>
       <View style={{}}>
-        <ImageBackground source={imgSrc} style={styles.image2} blurRadius={20}>
+        <ImageBackground source={{uri:props.route.params.imgUris[imgNum]}} style={styles.image2} blurRadius={20}>
           <View style={{flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.3)'}}></View>
         </ImageBackground>
-        <Image source={imgSrc} style={styles.image} />
+        <Image source={{uri:props.route.params.imgUris[imgNum]}} style={styles.image} />
       </View>
       <View //Touchable Area
         style={styles.touchableArea}>
@@ -81,13 +69,11 @@ export default function ImageScreen(props) {
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
-              console.log(
-                'props.route.params.coordinates[imgNum]:',
-                props.route.params.coordinates[imgNum],
-              );
+              
               props.navigation.navigate('Map', {
+                data: props.route.params.data,
                 index: imgNum,
-                coordinate: props.route.params.coordinates[imgNum],
+                coordinate: props.route.params.data.images[imgNum].geo,
               });
             }}>
             <Image source={require('../assets/goback.png')} />
@@ -95,7 +81,7 @@ export default function ImageScreen(props) {
               <Text
                 selectable={true}
                 style={{color: 'white', fontWeight: '400', fontSize: 13}}>
-                {address}
+                {props.route.params.data.images[imgNum].geocoding}
               </Text>
             </View>
           </TouchableOpacity>
@@ -124,7 +110,7 @@ export default function ImageScreen(props) {
         }}>
         <Progress.Bar
           style={{top: SLIDER_HEIGHT * 0.077}} // 25
-          progress={imgNum / (assets.assetsObject.length - 1)}
+          progress={(imgNum+1) / (props.route.params.data.images.length)}
           height={4}
           width={SLIDER_WIDTH * 0.8} //312
           color="white"
