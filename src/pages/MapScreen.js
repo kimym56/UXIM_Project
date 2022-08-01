@@ -123,7 +123,7 @@ export default function MapScreen(props) {
 
     console.log('mapReady : ', markers);
     this.map.fitToCoordinates(markers, {
-      edgePadding: {top: 100, right: 100, bottom: 100, left: 100},
+      edgePadding: {top: 100, right: 100, bottom: 200, left: 100},
     });
   };
   // const setIndexAfterGoBack = (index) => {
@@ -140,6 +140,7 @@ export default function MapScreen(props) {
               index: index,
               data: props.route.params.data,
               imgUris: imgUris,
+              profileUri: props.route.params.profileUri
             });
           }}>
           {isLoading ? (
@@ -269,7 +270,7 @@ export default function MapScreen(props) {
           }}>
           <Image
             style={{width: 40, height: 40, borderRadius: 40 / 2}}
-            source={require('../assets/IMG_0638.jpeg')}
+            source={props.route.params.profileUri?{uri: props.route.params.profileUri}:require('../assets/defaultProfile.png')}
           />
           <View style={{width: 236, height: 34}}>
             <Text style={{fontWeight: '400', fontSize: 13}}>

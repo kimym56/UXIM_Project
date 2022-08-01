@@ -35,7 +35,7 @@ export default function ImageScreen(props) {
   const [imgNum, setIndex] = useState(src);
   const [imgSrc, setImgSrc] = useState(props.route.params.imgUris[imgNum]);
   const changeImage = num => {
-    if (imgNum + num >= 0 && imgNum + num < 14) {
+    if (imgNum + num >= 0 && imgNum + num < props.route.params.imgUris.length) {
       setIndex(imgNum + num);
       setImgSrc(props.route.params.imgUris[imgNum + num]);
     }
@@ -127,7 +127,7 @@ export default function ImageScreen(props) {
           }}>
           <Image
             style={{width: 40, height: 40, borderRadius: 40 / 2, left: 38}}
-            source={require('../assets/IMG_0638.jpeg')}
+            source={props.route.params.profileUri?{uri:props.route.params.profileUri}:require('../assets/defaultProfile.png')}
           />
           <Like style={{left: 210}} size={20} color={'white'} />
           <QA

@@ -1,60 +1,58 @@
-import React from 'react';
-import {
-  SafeAreaView,
-  View,
-  Text,
-  useColorScheme,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  StatusBar,
-} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {useColorScheme} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import ImageScreen from './src/pages/ImageScreen';
 import MapScreen from './src/pages/MapScreen';
 import BottomStack from './src/pages/BottomStack';
-import SettingScreen from './src/pages/SettingScreen'
-import LogoScreen from './src/pages/LoginScreen'
+import SettingScreen from './src/pages/SettingScreen';
 import {createStackNavigator} from '@react-navigation/stack';
-import { LogBox } from 'react-native';
-
+import {LogBox} from 'react-native';
 import LoginScreen from './src/pages/LoginScreen';
 import RegisterScreen from './src/pages/RegisterScreen';
 import EditImageScreen from './src/pages/EditImageScreen';
 import EditRouteScreen from './src/pages/EditRouteScreen';
-// LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
-// LogBox.ignoreAllLogs();//Ignore all log notifications
+import RegisterProfileScreen from './src/pages/RegisterProfileScreen';
+import LandingScreen from './src/pages/LandingScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+LogBox.ignoreAllLogs(); //Ignore all log notifications
 export default function App() {
-  // LogBox.ignoreLogs(['Warning: ...']);
   const isDarkMode = useColorScheme() === 'dark';
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
   const Tab = createBottomTabNavigator();
   const Stack = createStackNavigator();
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [userToken,setUserToken] = useState(AsyncStorage.getItem('session'))
+  useEffect(() => {
+    setTimeout(() => setIsLoading(true), 4000);
+  });
+  if (!isLoading) return <LandingScreen />;
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Stack"
+        initialRouteName={!userToken ? 'Stack' : 'Login'}
         screenOptions={{
           tabBarShowLabel: false,
           headerShown: false,
           // tabBarIconStyle: {display: 'none'},
         }}>
+        <Stack.Screen name="Stack" component={BottomStack} />
+
         <Stack.Screen name="Image" component={ImageScreen} />
         <Stack.Screen name="Map" component={MapScreen} />
-        <Stack.Screen name="Stack" component={BottomStack} />
-        <Stack.Screen name='Setting' component={SettingScreen}/>
 
-        <Stack.Screen name='Login' component={LoginScreen}/>
-        <Stack.Screen name='Register' component={RegisterScreen}/>
+        <Stack.Screen name="Setting" component={SettingScreen} />
 
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen name="Register2" component={RegisterProfileScreen} />
 
-        <Stack.Screen name='Edit' component={EditImageScreen}/>
-        <Stack.Screen name='Edit2' component={EditRouteScreen}/>
+        <Stack.Screen name="Edit" component={EditImageScreen} />
+        <Stack.Screen name="Edit2" component={EditRouteScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

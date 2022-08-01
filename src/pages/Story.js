@@ -15,11 +15,12 @@ import {Bookmark} from '../assets/Button/Bookmark';
 import {QA} from '../assets/Button/QA.js';
 import {BottomSheetModal, BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import {CustomFooter} from './CustomFooter.js';
-import {storage} from '../../firebase/firebase-config';
 import {getDownloadURL, ref} from 'firebase/storage';
 const SLIDER_WIDTH = Dimensions.get('window').width;
 const SLIDER_HEIGHT = Dimensions.get('window').height;
 import LinearGradient from 'react-native-linear-gradient';
+import {db, storage} from '../../firebase/firebase-config';
+import {collection, query, where, getDocs} from 'firebase/firestore/lite';
 
 // const b64Buffer = await RNFS.readFile('file://../src/assets/IMG_0596.heic', 'base64') // Where the URI looks like this: "file:///path/to/image/IMG_0123.HEIC"
 // const fileBuffer = decode(b64Buffer)
@@ -30,15 +31,31 @@ import LinearGradient from 'react-native-linear-gradient';
 
 export default function Story(props) {
   const [imgUri, setImgUri] = useState();
+  const [profileUri, setProfileUri] = useState();
   useEffect(() => {
-    const reference = ref(storage, props.data.images[0].uri);
-    getDownloadURL(reference).then(ret => setImgUri(ret));
+    const q = query(
+      collection(db, 'Users'),
+      where('id', '==', props.data.writer),
+    );
+    const querySnapshot = getDocs(q).then(ret => {
+      const profile =
+        ret._docs[0]._document.data.value.mapValue.fields.profile.stringValue;
+      // console.log('ret : ',ret._docs[0]._document.data.value.mapValue.fields.profile.stringValue)
+      getDownloadURL(ref(storage, profile)).then(rett => {
+        setProfileUri(rett);
+      });
+    });
+    const imageReference = ref(storage, props.data.images[0].uri);
+    // console.log('imguri : ', props.data.images[0].uri);
+    getDownloadURL(imageReference).then(ret => setImgUri(ret));
   }, []);
 
   console.log('Story render');
   // console.log('props in Story: ', props);
   // console.log('data : ', props.data?.images[0].geo);
-  // console.log('imgUri: ',imgUri)
+  // console.log('profileUri: ', profileUri);
+  // console.log('imgUri: ', imgUri);
+
   // console.log(RNFS.CachesDirectoryPath);
   const [lat, long] = [
     props.data.images[0].geo.latitude,
@@ -71,6 +88,7 @@ export default function Story(props) {
         onPress={() => {
           props.navigation.navigate('Map', {
             data: props.data,
+            profileUri: profileUri,
             coordinate: {latitude: lat, longitude: long},
           });
         }}>
@@ -81,7 +99,7 @@ export default function Story(props) {
           // borderWidth: 1,
           // backgroundColor:'rgba(0,0,0,0.05)',
           bottom: 0,
-          height:60,
+          height: 60,
           position: 'absolute',
           // height: SLIDER_HEIGHT * 0.118, // 60
           width: '100%', // 390
@@ -89,7 +107,7 @@ export default function Story(props) {
           justifyContent: 'space-between',
           flexDirection: 'row',
         }}>
-          <LinearGradient
+        <LinearGradient
           style={{
             position: 'absolute',
             height: '100%',
@@ -97,14 +115,16 @@ export default function Story(props) {
           }}
           colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.8)']}
         />
+
         <Image
           style={{
             width: 40,
             height: 40,
             borderRadius: 40 / 2,
             marginLeft: 20,
+            // borderWidth:1
           }}
-          source={require('../assets/IMG_0638.jpeg')}
+          source={profileUri?{uri: profileUri}:require('../assets/defaultProfile.png')}
         />
         <View style={{marginLeft: 14, width: 256}}>
           <Text

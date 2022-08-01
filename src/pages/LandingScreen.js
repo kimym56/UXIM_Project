@@ -11,7 +11,7 @@ export default function LandingScreen() {
         source={require('../assets/lottie/78790-hello.json')}
         autoPlay
         // loop
-        style={{borderWidth:1}}
+        style={{borderWidth:0}}
       />
     </SafeAreaView>
   );

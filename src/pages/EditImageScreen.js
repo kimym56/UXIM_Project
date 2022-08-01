@@ -16,7 +16,7 @@ import Geocoder from 'react-native-geocoding';
 
 export default function EditImageScreen(props) {
   const images = props.route.params.images || null;
-  console.log('edit props : ', props);
+  // console.log('edit props : ', props);
   const [imgNum, setImgNum] = useState(0);
   const [geocoder, setGeocoder] = useState('');
   // console.log('imgNum : ', imgNum, images.length);
@@ -52,7 +52,14 @@ export default function EditImageScreen(props) {
               />
             </TouchableOpacity>
           ) : (
-            <View style={{width: 44, backgroundColor: 'white'}} />
+            <TouchableOpacity
+            style={{width: 44, height: 44}}
+            onPress={() => props.navigation.goBack()}>
+            <Image
+              source={require('../assets/Icon_delete.png')}
+              style={{width: 44, height: 44,}}
+            />
+          </TouchableOpacity>
           )}
           <View style={{marginLeft: 14, width: 256}}>
             <Text

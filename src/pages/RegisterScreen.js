@@ -1,79 +1,127 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, Image} from 'react-native';
 import React, {useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {TextInput, TouchableOpacity} from 'react-native-gesture-handler';
-import {createUserWithEmailAndPassword} from 'firebase/auth';
-import {authentication} from '../../firebase/firebase-config';
+import CheckBox from '@react-native-community/checkbox';
 export default function RegisterScreen(props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [password2, setPassword2] = useState('');
+  const [isSelected, setSelection] = useState(false);
 
-  const RegisterUser = () => {
-    createUserWithEmailAndPassword(authentication, email, password)
-      .then(re => {
-        console.log('RegisterUser re : ', re);
-        props.navigation.goBack()
-      })
-      .catch(re => {
-        console.log('error in RegisterScreen:',re);
-      });
-  };
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.topBar}>
+        <TouchableOpacity
+          style={{width: 30, height: 30}}
+          onPress={() => props.navigation.goBack()}>
+          <Image
+            source={require('../assets/Icon_Undo_black.png')}
+            style={{width: 30, height: 30}}
+          />
+        </TouchableOpacity>
+      </View>
       <View style={styles.logoContainer}>
         <Text style={styles.logo}>회원가입</Text>
       </View>
       <View style={styles.mainContainer}>
-        <Text style={styles.labelText}>Email</Text>
+        <Text style={styles.labelText}>이메일</Text>
         <View style={styles.inputContainer}>
           <TextInput
-            placeholder="Email"
+            placeholder="이메일"
             value={email}
             onChangeText={text => setEmail(text)}></TextInput>
         </View>
-        <Text style={styles.labelText}>Password</Text>
+        <Text style={styles.labelText}>비밀번호</Text>
         <View style={styles.inputContainer}>
           <TextInput
-            placeholder="Password"
+            placeholder="비밀번호"
             value={password}
             secureTextEntry={true}
             onChangeText={text => setPassword(text)}></TextInput>
         </View>
-        <Text style={styles.labelText}>Repeat Password</Text>
+        <Text style={styles.labelText}>비밀번호 재확인</Text>
         <View style={styles.inputContainer}>
           <TextInput
-            placeholder="Repeat Password"
+            placeholder="비밀번호 재확인"
             value={password2}
             secureTextEntry={true}
             onChangeText={text => setPassword2(text)}></TextInput>
         </View>
-
-        <TouchableOpacity style={styles.buttonContainer} onPress={RegisterUser}>
-          <Text style={styles.buttonText}>Register</Text>
+        <View style={styles.serviceContainer}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              width: 338,
+            }}>
+            <CheckBox
+              // onFillColor="#434343"
+              onTintColor="#434343"
+              tintColor="#434343"
+              boxType="square"
+              value={isSelected}
+              onValueChange={setSelection}
+              style={styles.checkbox}
+            />
+            <Text style={styles.serviceText1}>
+              서비스 정보 수신에 동의합니다.
+            </Text>
+            <View style={{marginLeft: 'auto'}}>
+              <TouchableOpacity>
+                <Text style={styles.serviceText2}>내용 보기</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <TouchableOpacity>
+            <Text style={styles.serviceText3}>
+              이용약관 및 개인정보 처리방침에 동의합니다.
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity
+          style={styles.buttonContainer}
+          onPress={() =>
+            props.navigation.navigate('Register2', {
+              email: email,
+              password: password,
+            })
+          }>
+          <Text style={styles.buttonText}>다음</Text>
         </TouchableOpacity>
-        {/* <View style={{flexDirection: 'row', marginTop: 14}}>
-          <TouchableOpacity>
-            <Text style={styles.subLabelText}>비밀번호 찾기</Text>
-          </TouchableOpacity>
-          <Text style={styles.subLabelText}>
-            {'  '}|{'  '}
-          </Text>
-          <TouchableOpacity>
-            <Text style={styles.subLabelText}>회원가입</Text>
-          </TouchableOpacity>
-        </View> */}
       </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'white',
+    flex: 1,
+  },
+  topBar: {
+    marginTop: 12, //  58
+    paddingHorizontal: 25,
+    // borderWidth:1,
+    flexDirection: 'row',
+    // backgroundColor: 'rgba(100,100,100,0.15)',
+    // justifyContent: 'center',
+    // alignItems:'center',
+    // position: 'absolute',
+    // height: 44,
+    width: 390,
+    // margin: 14,
+    // flexDirection: 'row',
+    justifyContent: 'space-between',
+    // // borderWidth:1,
+    // // backgroundColor:'black'
+  },
   logoContainer: {
+    // borderWidth:1,
     justifyContent: 'center',
     // alignSelf: 'center',
-    marginLeft: 72,
-    marginTop: 64,
+    paddingLeft: 26,
+    marginTop: 40,
   },
   logo: {
     fontWeight: '600',
@@ -82,7 +130,7 @@ const styles = StyleSheet.create({
   },
   labelText: {
     fontSize: 15,
-    fontWeight: '500',
+    fontWeight: '600',
     marginTop: 20,
   },
   inputContainer: {
@@ -91,10 +139,40 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     marginTop: 8,
     padding: 12,
-    width: 240,
+    width: 338,
     height: 42,
     alignSelf: 'center',
     justifyContent: 'center',
+  },
+  serviceContainer: {
+    flexDirection: 'column',
+    marginTop: 22,
+    // borderWidth:1
+  },
+  checkbox: {
+    alignSelf: 'center',
+    // borderWidth: 1,
+    width: 18,
+    height: 18,
+  },
+  serviceText1: {
+    marginLeft: 6,
+    fontSize: 12,
+    color: '#7E7E7E',
+    fontWeight: '600',
+  },
+  serviceText2: {
+    fontWeight: '500',
+    fontSize: 12,
+    textDecorationLine: 'underline',
+    color: '#7E7E7E',
+  },
+  serviceText3: {
+    marginTop: 10,
+    textDecorationLine: 'underline',
+    fontWeight: '500',
+    fontSize: 12,
+    color: '#7E7E7E',
   },
   mainContainer: {
     marginTop: 20,
@@ -104,7 +182,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     backgroundColor: '#D5D5D5',
-    width: 240,
+    width: 338,
     height: 42,
     marginTop: 24,
     borderRadius: 3,

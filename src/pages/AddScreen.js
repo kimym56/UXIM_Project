@@ -35,26 +35,28 @@ export function pickMultiple(props) {
   ImagePicker.openPicker({
     multiple: true,
     waitAnimationEnd: false,
-    sortOrder: 'desc',
+    sortOrder: 'asc',
     includeExif: true,
     forceJpg: true,
+    maxFiles:10,
   })
     .then(images => {
       // console.log('images : ', images);
       const temp = images.map(i => {
-        // console.log('received exif', i.exif['{GPS}']);
+        console.log('received exif', i.exif['{TIFF}']);
         return {
           uri: i.path,
           width: i.width,
           height: i.height,
           mime: i.mime,
           gps: i.exif['{GPS}'],
+          DateTime : i.exif['{TIFF}'].DateTime
         };
       });
       // setImageState({
       //   images: temp,
       // });
-      return temp;
+      return temp.sort((a,b)=>a.DateTime > b.DateTime);
     })
     .then(ret => {
       // console.log('ret : ', ret),
@@ -71,12 +73,6 @@ export default function AddScreen(props) {
   console.log('props : ', props);
   const [imageState, setImageState] = useState({images: null});
   const [progress, setProgress] = useState(0);
-  const getData = async () => {
-    const routesCol = collection(db, 'Route');
-    const routeSnapshot = await getDocs(routesCol);
-    const routeList = routeSnapshot.docs.map(doc => doc.data());
-    console.log('routeList : ', routeList);
-  };
   const getFullAddress = item => {
     return Geocoder.from({
       latitude: item.gps.Latitude,
@@ -266,7 +262,7 @@ export default function AddScreen(props) {
     ImagePicker.openPicker({
       multiple: true,
       waitAnimationEnd: false,
-      sortOrder: 'desc',
+      // sortOrder: 'desc',
       includeExif: true,
       forceJpg: true,
     })

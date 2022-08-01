@@ -12,7 +12,7 @@ import React, {useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Carousel from 'react-native-snap-carousel';
 import * as Progress from 'react-native-progress';
-import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
+import MapView, {PROVIDER_GOOGLE,Marker, Polyline} from 'react-native-maps';
 const SLIDER_WIDTH = Dimensions.get('window').width;
 const SLIDER_HEIGHT = Dimensions.get('window').height;
 const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.494);
@@ -26,20 +26,18 @@ import {
   updateDoc,
   arrayUnion,
 } from 'firebase/firestore/lite';
-import {
-  ref,
-  uploadBytesResumable,
-} from 'firebase/storage';
+import {ref, uploadBytesResumable} from 'firebase/storage';
 import Geocoder from 'react-native-geocoding';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function EditRouteScreen(props) {
   const images = props.route.params.images;
   const DATA = images;
 
-  console.log('img in route : ', images[0].uri);
+  // console.log('img in route : ', images[0].uri);
   const [text, onChangeText] = useState('');
   const [stateIndex, setIndex] = useState(0);
-
+  const userToken = AsyncStorage.getItem('session')
   const _renderItem = ({item, index}) => {
     // console.log('DATA : ', images[0].uri);
     // return <Category imageUri={"https://cdn.pixabay.com/photo/2018/04/25/09/26/eiffel-tower-3349075_1280.jpg"}/>;
@@ -62,10 +60,26 @@ export default function EditRouteScreen(props) {
       </View>
     );
   };
+
+  const setMapReady = () => {
+    var markers = images.map(item => {
+      return {
+        latitude: item.gps.Latitude,
+        longitude: item.gps.Longitude,
+      };
+    });
+
+    console.log('mapReady : ', markers);
+    this.map.fitToCoordinates(markers, {
+      edgePadding: {top: 100, right: 100, bottom: 100, left: 100},
+    });
+  };
   const onSnap = index => {
     this.map.animateToRegion({
       latitude: images[index].gps.Latitude,
       longitude: images[index].gps.Longitude,
+      latitudeDelta: 0.03,
+      longitudeDelta: 0.03,
     });
 
     // setGPS(assets.markers[index].coordinate);
@@ -107,29 +121,31 @@ export default function EditRouteScreen(props) {
     });
 
     images.map((item, index) => {
-      console.log('index in EditRouteScreen: ', index);
+      console.log('index in EditRouteScreen: ',item, index);
       uploadImage(item)
         .then(imageUri => {
           console.log('imageUri : ', imageUri);
           getFullAddress(item).then(res => {
+            console.log('geoc : ', res.results[0].formatted_address)
             updateDoc(docRef, {
               images: arrayUnion({
                 geo: new GeoPoint(item.gps.Latitude, item.gps.Longitude),
                 geocoding: res.results[0].formatted_address,
-                uri: imageUri.split('.')[0]+'_1200x1600.jpeg',
+                uri: imageUri.split('.')[0] + '_1200x1600.jpeg',
               }),
             });
           });
         })
+        .then(()=>{})
         .catch(err => {
-          console.log('error in EditRouteScreen:',err);
-        })
-    })
-    .then(() => alert('All images uploaded'))
-    .catch(err => {
-      console.log('error in EditRouteScreen2:',err);
+          console.log('error in EditRouteScreen:', err);
+        });
     });
-    props.navigation.navigate('Stack')
+    props.navigation.navigate('Stack');
+    // .then(() => )
+    // .catch(err => {
+    //   console.log('error in EditRouteScreen2:', err);
+    // });
   };
 
   return (
@@ -170,13 +186,47 @@ export default function EditRouteScreen(props) {
           this.map = ref;
         }}
         style={styles.map}
+        onMapReady={setMapReady}
         initialRegion={{
           latitude: images[0].gps.Latitude,
           longitude: images[0].gps.Longitude,
-          latitudeDelta: 0.1,
-          longitudeDelta: 0.1,
-        }}
-      />
+        }}>
+        {images.map((marker, index) => {
+          // console.log('marker : ', marker);
+          // console.log('marker2 : ', assets.markers[index].coordinate);
+
+          return (
+            <Marker
+              key={index}
+              coordinate={{
+                latitude: marker.gps.Latitude,
+                longitude: marker.gps.Longitude,
+              }}>
+              {stateIndex == index ? (
+                <Image
+                  source={require('../assets/UXIM_icon-05.png')}
+                  style={{width: 40, height: 40}}
+                />
+              ) : (
+                <Image
+                  source={require('../assets/UXIM_icon-03.png')}
+                  style={{width: 30, height: 30}}
+                />
+              )}
+            </Marker>
+          );
+        })}
+         <Polyline
+          coordinates={images.map(item => {
+            return {
+              latitude: item.gps.Latitude,
+              longitude: item.gps.Longitude,
+            };
+          })}
+          strokeColor="#C3AD98" // fallback for when `strokeColors` is not supported by the map-provider
+          strokeWidth={5}
+        />
+      </MapView>
       <View //Carousel Container
         style={styles.carouselContainer}>
         <Carousel
